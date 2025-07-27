@@ -1387,5 +1387,51 @@
   <script src="script.js"></script>
   <script src="cosmic-particles.js"></script>
   <script src="interactive-starfield.js"></script>
+</main>
+
+<script>
+// Smooth scroll and active nav link highlight
+document.addEventListener('DOMContentLoaded', function() {
+  const navLinks = document.querySelectorAll('.nav-link');
+  const sections = Array.from(navLinks).map(link => {
+    const id = link.getAttribute('href').replace('#', '');
+    return document.getElementById(id);
+  });
+
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      const targetId = this.getAttribute('href').replace('#', '');
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        e.preventDefault();
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+        // Update active class
+        navLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+      }
+    });
+  });
+
+  // Highlight nav link on scroll
+  window.addEventListener('scroll', function() {
+    let current = '';
+    sections.forEach((section, idx) => {
+      if (section) {
+        const sectionTop = section.offsetTop - 80; // adjust for header height
+        if (window.scrollY >= sectionTop) {
+          current = section.id;
+        }
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+});
+</script>
 </body>
 </html>

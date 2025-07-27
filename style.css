@@ -18,6 +18,19 @@
   --galaxy-gradient: linear-gradient(45deg, #000013, #0B0C2A, #1E1B4B);
   --glass-cosmic: rgba(255, 255, 255, 0.03);
   --glass-border-cosmic: rgba(6, 255, 165, 0.2);
+  
+  /* Accent colors for skills and animations */
+  --accent-purple: #8B5CF6;
+  --accent-cyan: #06FFA5;
+  --accent-pink: #EC4899;
+  
+  /* Layout and component colors */
+  --primary-bg: #000013;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(6, 255, 165, 0.2);
+  --glow-primary: rgba(6, 255, 165, 0.8);
+  --glow-secondary: rgba(139, 92, 246, 0.8);
+  --text-secondary: rgba(255, 255, 255, 0.8);
 }
 
 /* ULTIMATE Scroll Performance Optimization */
@@ -1053,12 +1066,6 @@ section h2::after {
 /* Projects Section */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 3rem;
-}
-
-.project-grid {
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
@@ -1548,8 +1555,8 @@ section h2::after {
 
 /* Animations */
 .fade-in {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 0;
+  transform: translateY(30px);
   transition: all 0.6s ease;
 }
 
@@ -2225,7 +2232,7 @@ body.is-scrolling .cert-item::before {
   box-shadow: 0 0 20px var(--glow-secondary);
 }
 
-.project-grid {
+.additional-projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   gap: 2.5rem;

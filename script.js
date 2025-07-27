@@ -1,20 +1,200 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Performance: Add scroll detection for lag-free scrolling
+  // Interactive Starfield Background
+  const starfieldCanvas = document.getElementById('starfield-canvas');
+  const ctx = starfieldCanvas.getContext('2d');
+  let stars = [];
+  let mouse = { x: 0, y: 0 };
+  let animationId;
+
+  // Initialize starfield with performance optimization
+  function initStarfield() {
+    starfieldCanvas.width = window.innerWidth;
+    starfieldCanvas.height = window.innerHeight;
+    
+    stars = [];
+    // Reduce star count for better performance
+    const numStars = Math.floor((window.innerWidth * window.innerHeight) / 12000);
+    
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * starfieldCanvas.width,
+        y: Math.random() * starfieldCanvas.height,
+        z: Math.random() * 1000,
+        size: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.1,
+        twinkle: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.02 + 0.01
+      });
+    }
+  }
+
+  // Update stars based on mouse movement
+  function updateStars() {
+    const centerX = starfieldCanvas.width / 2;
+    const centerY = starfieldCanvas.height / 2;
+    const mouseInfluence = 0.0002;
+    
+    stars.forEach(star => {
+      // Mouse parallax effect
+      const deltaX = (mouse.x - centerX) * mouseInfluence * (1000 - star.z) / 1000;
+      const deltaY = (mouse.y - centerY) * mouseInfluence * (1000 - star.z) / 1000;
+      
+      star.x += deltaX;
+      star.y += deltaY;
+      
+      // Gentle drift
+      star.x += Math.sin(Date.now() * 0.001 + star.twinkle) * 0.1;
+      star.y += Math.cos(Date.now() * 0.001 + star.twinkle * 1.3) * 0.05;
+      
+      // Update twinkle
+      star.twinkle += star.twinkleSpeed;
+      
+      // Wrap around edges
+      if (star.x < -50) star.x = starfieldCanvas.width + 50;
+      if (star.x > starfieldCanvas.width + 50) star.x = -50;
+      if (star.y < -50) star.y = starfieldCanvas.height + 50;
+      if (star.y > starfieldCanvas.height + 50) star.y = -50;
+    });
+  }
+
+  // Render stars
+  function renderStars() {
+    // Clear canvas with completely transparent background
+    ctx.clearRect(0, 0, starfieldCanvas.width, starfieldCanvas.height);
+    
+    stars.forEach(star => {
+      const depth = (1000 - star.z) / 1000;
+      const alpha = Math.sin(star.twinkle) * 0.3 + 0.7;
+      const size = star.size * depth;
+      
+      // Create gradient for realistic star glow
+      const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, size * 3);
+      gradient.addColorStop(0, `rgba(200, 220, 255, ${alpha * depth * 0.8})`);
+      gradient.addColorStop(0.5, `rgba(150, 180, 255, ${alpha * depth * 0.4})`);
+      gradient.addColorStop(1, 'rgba(100, 140, 255, 0)');
+      
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, size * 2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Core star
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha * depth * 0.9})`;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, size * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // Animation loop with performance throttling and pause capability
+  let lastFrameTime = 0;
+  let isPaused = false;
+  const targetFPS = 30; // Reduced from 60
+  const frameInterval = 1000 / targetFPS;
+  
+  function animateStarfield(currentTime) {
+    if (!isPaused && currentTime - lastFrameTime >= frameInterval) {
+      updateStars();
+      renderStars();
+      lastFrameTime = currentTime;
+    }
+    animationId = requestAnimationFrame(animateStarfield);
+  }
+  
+  // Pause/resume functions
+  window.pauseStarfield = () => { isPaused = true; };
+  window.resumeStarfield = () => { isPaused = false; };
+
+  // Mouse tracking
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  // Resize handler
+  window.addEventListener('resize', () => {
+    initStarfield();
+  });
+
+  // Initialize and start starfield with performance timing
+  initStarfield();
+  requestAnimationFrame(animateStarfield);
+
+  // Simplified Header Scroll Effect
+  let headerTicking = false;
+  let lastScrollY = 0;
+  
+  function updateHeader() {
+    if (!headerTicking) {
+      requestAnimationFrame(() => {
+        const header = document.querySelector('.futuristic-header');
+        if (!header) return;
+        
+        const scrollY = window.scrollY;
+        
+        // Only update if scroll position changed significantly
+        if (Math.abs(scrollY - lastScrollY) > 5) {
+          if (scrollY > 50) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
+          lastScrollY = scrollY;
+        }
+        
+        headerTicking = false;
+      });
+      headerTicking = true;
+    }
+  }
+
+  // Update header on scroll with throttling
+  window.addEventListener('scroll', updateHeader, { passive: true });
+  updateHeader(); // Initial call
+
+  // Optimized scroll performance handler - SINGLE handler for everything
   let scrollTimeout;
   let isScrolling = false;
+  let scrollTicking = false;
 
   function handleScrollStart() {
-    if (!isScrolling) {
-      document.body.classList.add('is-scrolling');
-      isScrolling = true;
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        if (!isScrolling) {
+          document.body.classList.add('is-scrolling');
+          isScrolling = true;
+          
+          // Pause heavy animations during scroll
+          const starfield = document.getElementById('starfield-canvas');
+          const neuralBg = document.getElementById('neural-network-bg');
+          const matrixCanvas = document.getElementById('matrix-canvas');
+          
+          if (starfield) starfield.style.display = 'none';
+          if (neuralBg) neuralBg.style.display = 'none';
+          if (matrixCanvas) matrixCanvas.style.display = 'none';
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
     }
+    
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
       document.body.classList.remove('is-scrolling');
       isScrolling = false;
+      
+      // Re-enable animations after scroll
+      const starfield = document.getElementById('starfield-canvas');
+      const neuralBg = document.getElementById('neural-network-bg');
+      const matrixCanvas = document.getElementById('matrix-canvas');
+      
+      if (starfield) starfield.style.display = 'block';
+      if (neuralBg) neuralBg.style.display = 'block';
+      if (matrixCanvas) matrixCanvas.style.display = 'block';
     }, 150);
   }
 
+  // Single scroll event listener
   window.addEventListener('scroll', handleScrollStart, { passive: true });
 
   // Preloader
@@ -27,88 +207,265 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Navigation
-  const navLinks = document.querySelectorAll('.nav-link');
-  const sections = document.querySelectorAll('section');
-
-  // Intersection Observer for sections
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Add visible class for fade-in animation
-        entry.target.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-
-        // Update nav link active state
-        const id = entry.target.getAttribute('id');
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === `#${id}`) {
-            link.classList.add('active');
-          }
-        });
-      }
+  // ==========================================
+  // BULLETPROOF NAVIGATION SYSTEM - FINAL FIX
+  // ==========================================
+  
+  function initNavigation() {
+    console.log('🚀 FINAL Navigation System Fix...');
+    
+    // Get all navigation elements with fresh query
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    
+    console.log(`Found ${navLinks.length} nav links and ${sections.length} sections`);
+    
+    if (navLinks.length === 0) {
+      console.error('❌ No navigation links found!');
+      setTimeout(initNavigation, 500); // Retry
+      return;
+    }
+    
+    // Clear any existing handlers first
+    navLinks.forEach(link => {
+      link.onclick = null;
+      link.removeAttribute('onclick');
     });
-  }, { threshold: 0.3 });
-
-  // Observe each section
-  sections.forEach(section => {
-    observer.observe(section);
-  });
-
-  // Smooth scrolling for navigation links
-  navLinks.forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const targetId = this.getAttribute('href');
-      const targetSection = document.querySelector(targetId);
+    
+    // Add robust click handlers
+    navLinks.forEach((link, index) => {
+      const href = link.getAttribute('href');
+      const targetSection = document.querySelector(href);
       
-      if (targetSection) {
-        targetSection.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+      console.log(`🔗 Nav ${index + 1}: ${href} -> ${targetSection ? '✅ FOUND' : '❌ MISSING'}`);
+      
+      if (!targetSection) {
+        console.warn(`⚠️ Section ${href} not found`);
+        return;
       }
+      
+      // Method 1: Direct onclick (most reliable)
+      link.onclick = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        console.log(`🎯 ONCLICK: Navigating to ${href}`);
+        
+        // Update active states
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Get current header height dynamically
+        const header = document.querySelector('.futuristic-header');
+        const headerHeight = header ? header.offsetHeight : 80;
+        
+        // Calculate target position
+        const targetRect = targetSection.getBoundingClientRect();
+        const targetPosition = targetRect.top + window.pageYOffset - headerHeight;
+        
+        // Smooth scroll
+        window.scrollTo({
+          top: Math.max(0, targetPosition),
+          behavior: 'smooth'
+        });
+        
+        console.log(`✅ Navigated to ${href} at position ${targetPosition}`);
+        return false;
+      };
+      
+      // Method 2: addEventListener as backup
+      link.addEventListener('click', function(event) {
+        console.log(`🔄 EVENT LISTENER: ${href}`);
+        event.preventDefault();
+        event.stopPropagation();
+      }, { passive: false, capture: true });
+      
+      // Ensure link is fully clickable
+      link.style.pointerEvents = 'auto';
+      link.style.cursor = 'pointer';
+      link.setAttribute('tabindex', '0'); // Keyboard accessible
     });
-  });
+    
+    console.log('✅ Navigation system setup completed successfully');
+  }
+        
+        // Prevent default behavior
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Update active states
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Calculate scroll position with header offset
+        const headerHeight = 80;
+        const rect = targetSection.getBoundingClientRect();
+        const scrollTop = window.pageYOffset + rect.top - headerHeight;
+        
+        // Smooth scroll to target
+        window.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+        
+        console.log(`✅ Scrolled to ${href}`);
+      }, { passive: false });
+      
+      // Also add onclick as backup
+      link.onclick = function(event) {
+        console.log(`� Backup onclick: ${href}`);
+        event.preventDefault();
+        
+        // Update active states
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Scroll to target
+        const headerHeight = 80;
+        const rect = targetSection.getBoundingClientRect();
+        const scrollTop = window.pageYOffset + rect.top - headerHeight;
+        
+        window.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+        
+        return false;
+      };
+      
+      // Ensure the link is clickable
+      link.style.pointerEvents = 'auto';
+      link.style.cursor = 'pointer';
+    });
+    
+    console.log('✅ Navigation system initialized successfully');
+  }
+  
+  // ==========================================
+  // NAVIGATION DEBUG & TEST SYSTEM
+  // ==========================================
+  
+  // Add visual feedback for debugging
+  function addDebugInfo() {
+    const debugDiv = document.createElement('div');
+    debugDiv.id = 'debug-info';
+    debugDiv.style.cssText = `
+      position: fixed;
+      top: 90px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 9999;
+      max-width: 200px;
+    `;
+    debugDiv.innerHTML = '<strong>Navigation Debug</strong><br>Check console for logs';
+    document.body.appendChild(debugDiv);
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      if (debugDiv.parentNode) {
+        debugDiv.parentNode.removeChild(debugDiv);
+      }
+    }, 5000);
+  }
+  
+  // Test navigation functionality
+  function testNavigation() {
+    console.log('🧪 Testing Navigation Functionality...');
+    
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    
+    console.log(`🔍 Found ${navLinks.length} nav links and ${sections.length} sections`);
+    
+    navLinks.forEach((link, index) => {
+      const href = link.getAttribute('href');
+      const target = document.querySelector(href);
+      console.log(`📝 Link ${index + 1}: ${href} -> ${target ? '✅' : '❌'}`);
+    });
+    
+    addDebugInfo();
+  }
+  
+  // Run tests
+  setTimeout(testNavigation, 1000);
+  
+  // ==========================================
+  // INITIALIZE NAVIGATION SYSTEM
+  // ==========================================
+  
+  console.log('🔄 Starting navigation initialization sequence...');
+  
+  // Try immediately if DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavigation);
+  } else {
+    initNavigation();
+  }
+  
+  // Backup initialization attempts
+  window.addEventListener('load', initNavigation);
+  setTimeout(initNavigation, 500);
+  setTimeout(initNavigation, 1000);
+  setTimeout(initNavigation, 2000); // Final attempt
 
-  // Neural Network Background Animation
-  createNeuralNetwork();
+  // ========================================
+  // INTERSECTION OBSERVER FOR ACTIVE NAVIGATION
+  // ========================================
+  
+  function initSectionObserver() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    if (sections.length === 0 || navLinks.length === 0) {
+      console.warn('⚠️ Sections or nav links not found for observer');
+      return;
+    }
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          console.log(`📍 Section in view: ${id}`);
+          
+          // Update active navigation link
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${id}`) {
+              link.classList.add('active');
+              console.log(`✅ Activated nav link: #${id}`);
+            }
+          });
+          
+          // Trigger fade-in animations
+          entry.target.querySelectorAll('.fade-in').forEach(el => {
+            el.classList.add('visible');
+          });
+        }
+      });
+    }, { 
+      threshold: 0.2, 
+      rootMargin: '-80px 0px -50% 0px' // Account for header height
+    });
 
-  // Hero animations
-  initHeroAnimations();
-
-  // Skills animation
-  initSkillsAnimation();
-
-  // Stats counter animation
-  initStatsCounter();
-
-  // Typing animation for quantum titles
-  initQuantumTitles();
-
-  // AI Assistant
-  initAIAssistant();
-
-  // Holographic Terminal
-  initHolographicTerminal();
-
-  // Contact form
-  initContactForm();
-
-  // Theme switcher (bonus feature)
-  initThemeSwitcher();
-
-  // Matrix rain effect
-  createMatrixRain();
-
-  // Particle cursor trail
-  initParticleCursor();
+    sections.forEach(section => {
+      observer.observe(section);
+    });
+    
+    console.log('✅ Section observer initialized');
+  }
+  
+  // Initialize section observer
+  setTimeout(initSectionObserver, 500);
 
   // Project modals
   initProjectModals();
 });
 
-// Neural Network Background
+// Neural Network Background - Optimized for performance
 function createNeuralNetwork() {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -126,56 +483,64 @@ function createNeuralNetwork() {
   canvas.style.pointerEvents = 'none';
 
   const nodes = [];
-  const nodeCount = 50;
-  const maxDistance = 150;
+  const nodeCount = 30; // Reduced from 50 for better performance
+  const maxDistance = 120; // Reduced connection distance
 
   // Create nodes
   for (let i = 0; i < nodeCount; i++) {
     nodes.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      radius: Math.random() * 3 + 1
+      vx: (Math.random() - 0.5) * 0.3, // Slower movement
+      vy: (Math.random() - 0.5) * 0.3,
+      radius: Math.random() * 2 + 1
     });
   }
 
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  let lastTime = 0;
+  const frameRate = 30; // Reduced from 60fps
+  const frameInterval = 1000 / frameRate;
 
-    // Update and draw nodes
-    nodes.forEach((node, i) => {
-      // Update position
-      node.x += node.vx;
-      node.y += node.vy;
+  function animate(currentTime) {
+    if (currentTime - lastTime >= frameInterval) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Bounce off edges
-      if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-      if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+      // Update and draw nodes
+      nodes.forEach((node, i) => {
+        // Update position
+        node.x += node.vx;
+        node.y += node.vy;
 
-      // Draw node
-      ctx.beginPath();
-      ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(108, 92, 231, 0.6)';
-      ctx.fill();
+        // Bounce off edges
+        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
 
-      // Draw connections
-      for (let j = i + 1; j < nodes.length; j++) {
-        const dx = nodes[j].x - node.x;
-        const dy = nodes[j].y - node.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        // Draw node
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(108, 92, 231, 0.4)'; // Reduced opacity
+        ctx.fill();
 
-        if (distance < maxDistance) {
-          const opacity = (maxDistance - distance) / maxDistance;
-          ctx.beginPath();
-          ctx.moveTo(node.x, node.y);
-          ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = `rgba(0, 212, 255, ${opacity * 0.3})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
+        // Draw connections (limited for performance)
+        for (let j = i + 1; j < Math.min(i + 5, nodes.length); j++) { // Limit connections
+          const dx = nodes[j].x - node.x;
+          const dy = nodes[j].y - node.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < maxDistance) {
+            const opacity = (maxDistance - distance) / maxDistance;
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(0, 212, 255, ${opacity * 0.2})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
         }
-      }
-    });
+      });
+      
+      lastTime = currentTime;
+    }
 
     requestAnimationFrame(animate);
   }
@@ -430,7 +795,7 @@ function initThemeSwitcher() {
   });
 }
 
-// Matrix Rain Effect
+// Matrix Rain Effect - Performance Optimized
 function createMatrixRain() {
   const canvas = document.getElementById('matrix-canvas');
   if (!canvas) return;
@@ -442,7 +807,7 @@ function createMatrixRain() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
   const charArray = chars.split('');
   const fontSize = 14;
-  const columns = canvas.width / fontSize;
+  const columns = Math.floor(canvas.width / fontSize);
   const drops = [];
 
   for (let i = 0; i < columns; i++) {
@@ -450,24 +815,24 @@ function createMatrixRain() {
   }
 
   function draw() {
-    ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+    ctx.fillStyle = 'rgba(10, 10, 15, 0.08)'; // Increased fade for better performance
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+    ctx.fillStyle = 'rgba(0, 212, 255, 0.6)'; // Reduced opacity
     ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
 
     for (let i = 0; i < drops.length; i++) {
       const text = charArray[Math.floor(Math.random() * charArray.length)];
       ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) { // Reduced frequency
         drops[i] = 0;
       }
       drops[i]++;
     }
   }
 
-  setInterval(draw, 33);
+  setInterval(draw, 50); // Reduced from 33ms to 50ms
 
   window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
@@ -794,20 +1159,7 @@ function debounce(func, wait) {
   };
 }
 
-// Optimize scroll events with passive listeners
-let ticking = false;
-
-function handleScroll() {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      // Handle minimal scroll-based animations here if needed
-      ticking = false;
-    });
-    ticking = true;
-  }
-}
-
-window.addEventListener('scroll', handleScroll, { passive: true });
+// Performance optimization - removed duplicate scroll handler
 
 // Add loading state management
 class LoadingManager {
@@ -872,45 +1224,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Optimize certificate items
   certItems.forEach(optimizeElement);
   
-  // Performance: Ultra-smooth scroll with 3D optimization
-  let isScrolling = false;
-  let scrollTimeout = null;
-  let ticking = false;
-  
-  const handleScrollPerformance = () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        if (!isScrolling) {
-          isScrolling = true;
-          document.body.classList.add('is-scrolling');
-        }
-        
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-          isScrolling = false;
-          document.body.classList.remove('is-scrolling');
-        }, 100);
-        
-        ticking = false;
-      });
-      ticking = true;
-    }
-  };
-  
-  // Use passive listeners for maximum performance
-  window.addEventListener('scroll', handleScrollPerformance, { 
-    passive: true,
-    capture: false 
-  });
-  
   // Optimize 3D transforms for project cards
   const optimizeProjectCards = () => {
     const projectCards = document.querySelectorAll('.project-card');
     projectCards.forEach(card => {
-      // Ensure GPU acceleration
+      // Ensure GPU acceleration but keep it lightweight
       card.style.transform = 'translateZ(0)';
       card.style.backfaceVisibility = 'hidden';
-      card.style.perspective = '1000px';
       
       // Minimal hover optimization
       let hoverTimeout = null;

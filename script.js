@@ -1,78 +1,247 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Portfolio Loading - Optimized Version');
+  console.log('🚀 Portfolio Loading - Interactive Starfield Version');
   
   // ==========================================
-  // PERFORMANCE-OPTIMIZED STARFIELD
+  // INTERACTIVE STARFIELD WITH MOUSE MOVEMENT & SHOOTING STARS
   // ==========================================
   
   const starfieldCanvas = document.getElementById('starfield-canvas');
   if (starfieldCanvas) {
     const ctx = starfieldCanvas.getContext('2d');
     let stars = [];
-    let mouse = { x: 0, y: 0 };
+    let shootingStars = [];
+    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let animationId;
     let isPaused = false;
 
-    // Initialize with minimal stars for performance
+    // Initialize starfield
     function initStarfield() {
       starfieldCanvas.width = window.innerWidth;
       starfieldCanvas.height = window.innerHeight;
       
       stars = [];
-      // Drastically reduce stars based on device capability
-      const isMobile = window.innerWidth < 768;
-      const isLowEnd = navigator.hardwareConcurrency < 4; // Check CPU cores
+      shootingStars = [];
       
-      let numStars = 25; // Base amount
-      if (!isMobile && !isLowEnd) numStars = 40;
-      if (window.innerWidth > 1920) numStars = 60;
+      // Create regular stars
+      const isMobile = window.innerWidth < 768;
+      const numStars = isMobile ? 150 : 200;
       
       for (let i = 0; i < numStars; i++) {
         stars.push({
           x: Math.random() * starfieldCanvas.width,
           y: Math.random() * starfieldCanvas.height,
-          size: Math.random() * 1 + 0.5,
+          originalX: 0,
+          originalY: 0,
+          size: Math.random() * 2 + 0.5,
           alpha: Math.random() * 0.5 + 0.5,
           twinkle: Math.random() * Math.PI * 2,
-          twinkleSpeed: Math.random() * 0.005 + 0.002
+          twinkleSpeed: Math.random() * 0.02 + 0.01,
+          mouseInfluence: Math.random() * 0.0003 + 0.0001
         });
+        
+        // Store original positions
+        stars[i].originalX = stars[i].x;
+        stars[i].originalY = stars[i].y;
       }
     }
 
-    // Simplified update function
-    function updateStars() {
-      stars.forEach(star => {
-        star.twinkle += star.twinkleSpeed;
-        star.alpha = Math.sin(star.twinkle) * 0.3 + 0.7;
+    // Create shooting star
+    function createShootingStar() {
+      const side = Math.floor(Math.random() * 4);
+      let x, y, vx, vy;
+      
+      switch(side) {
+        case 0: // Top
+          x = Math.random() * starfieldCanvas.width;
+          y = -50;
+          vx = (Math.random() - 0.5) * 4;
+          vy = Math.random() * 3 + 2;
+          break;
+        case 1: // Right
+          x = starfieldCanvas.width + 50;
+          y = Math.random() * starfieldCanvas.height;
+          vx = -(Math.random() * 3 + 2);
+          vy = (Math.random() - 0.5) * 4;
+          break;
+        case 2: // Bottom
+          x = Math.random() * starfieldCanvas.width;
+          y = starfieldCanvas.height + 50;
+          vx = (Math.random() - 0.5) * 4;
+          vy = -(Math.random() * 3 + 2);
+          break;
+        case 3: // Left
+          x = -50;
+          y = Math.random() * starfieldCanvas.height;
+          vx = Math.random() * 3 + 2;
+          vy = (Math.random() - 0.5) * 4;
+          break;
+      }
+      
+      shootingStars.push({
+        x, y, vx, vy,
+        length: Math.random() * 60 + 20,
+        alpha: 1,
+        decay: Math.random() * 0.02 + 0.01,
+        trail: []
       });
     }
 
-    // Simplified render function
+    // Update stars based on mouse position
+    function updateStars() {
+      stars.forEach(star => {
+        // Mouse influence - stars move away from cursor
+        const dx = star.originalX - mouse.x;
+        const dy = star.originalY - mouse.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = 200;
+        
+        if (distance < maxDistance) {
+          const influence = (maxDistance - distance) / maxDistance;
+          star.x = star.originalX + dx * influence * star.mouseInfluence * 100;
+          star.y = star.originalY + dy * influence * star.mouseInfluence * 100;
+        } else {
+          // Slowly return to original position
+          star.x += (star.originalX - star.x) * 0.02;
+          star.y += (star.originalY - star.y) * 0.02;
+        }
+        
+        // Twinkling effect
+        star.twinkle += star.twinkleSpeed;
+        star.alpha = Math.sin(star.twinkle) * 0.3 + 0.7;
+      });
+      
+      // Update shooting stars
+      shootingStars.forEach((shootingStar, index) => {
+        // Add current position to trail
+        shootingStar.trail.push({ x: shootingStar.x, y: shootingStar.y, alpha: shootingStar.alpha });
+        
+        // Limit trail length
+        if (shootingStar.trail.length > shootingStar.length) {
+          shootingStar.trail.shift();
+        }
+        
+        // Update position
+        shootingStar.x += shootingStar.vx;
+        shootingStar.y += shootingStar.vy;
+        
+        // Fade out
+        shootingStar.alpha -= shootingStar.decay;
+        
+        // Remove if faded or off screen
+        if (shootingStar.alpha <= 0 || 
+            shootingStar.x < -100 || shootingStar.x > starfieldCanvas.width + 100 ||
+            shootingStar.y < -100 || shootingStar.y > starfieldCanvas.height + 100) {
+          shootingStars.splice(index, 1);
+        }
+      });
+      
+      // Randomly create shooting stars
+      if (Math.random() < 0.005) { // 0.5% chance per frame
+        createShootingStar();
+      }
+    }
+
+    // Render everything
     function renderStars() {
       ctx.clearRect(0, 0, starfieldCanvas.width, starfieldCanvas.height);
       
+      // Render regular stars
       stars.forEach(star => {
         ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.8})`;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Add subtle glow for larger stars
+        if (star.size > 1.5) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.2})`;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      
+      // Render shooting stars
+      shootingStars.forEach(shootingStar => {
+        if (shootingStar.trail.length > 1) {
+          ctx.strokeStyle = `rgba(255, 255, 255, ${shootingStar.alpha})`;
+          ctx.lineWidth = 2;
+          ctx.lineCap = 'round';
+          
+          // Draw trail
+          ctx.beginPath();
+          shootingStar.trail.forEach((point, index) => {
+            const trailAlpha = (index / shootingStar.trail.length) * shootingStar.alpha;
+            ctx.globalAlpha = trailAlpha;
+            
+            if (index === 0) {
+              ctx.moveTo(point.x, point.y);
+            } else {
+              ctx.lineTo(point.x, point.y);
+            }
+          });
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+          
+          // Draw bright head
+          ctx.fillStyle = `rgba(255, 255, 255, ${shootingStar.alpha})`;
+          ctx.beginPath();
+          ctx.arc(shootingStar.x, shootingStar.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Add glow to head
+          ctx.fillStyle = `rgba(255, 255, 255, ${shootingStar.alpha * 0.3})`;
+          ctx.beginPath();
+          ctx.arc(shootingStar.x, shootingStar.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
       });
     }
 
-    // Ultra-low FPS animation (15 FPS max)
-    let lastFrameTime = 0;
-    const frameInterval = 67; // ~15 FPS
-
-    function animateStarfield(currentTime) {
-      if (!isPaused && currentTime - lastFrameTime >= frameInterval) {
+    // Animation loop
+    function animateStarfield() {
+      if (!isPaused) {
         updateStars();
         renderStars();
-        lastFrameTime = currentTime;
       }
       animationId = requestAnimationFrame(animateStarfield);
     }
 
-    // Pause during scroll
+    // Mouse tracking
+    let mouseTimeout;
+    document.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      
+      // Create particle effect at mouse position occasionally
+      if (Math.random() < 0.02) {
+        stars.push({
+          x: mouse.x + (Math.random() - 0.5) * 20,
+          y: mouse.y + (Math.random() - 0.5) * 20,
+          originalX: mouse.x + (Math.random() - 0.5) * 20,
+          originalY: mouse.y + (Math.random() - 0.5) * 20,
+          size: Math.random() * 1 + 0.5,
+          alpha: 1,
+          twinkle: 0,
+          twinkleSpeed: 0.1,
+          mouseInfluence: 0,
+          temporary: true,
+          life: 60 // frames
+        });
+      }
+      
+      // Remove temporary stars after their life expires
+      stars = stars.filter(star => {
+        if (star.temporary) {
+          star.life--;
+          star.alpha = star.life / 60;
+          return star.life > 0;
+        }
+        return true;
+      });
+    });
+
+    // Pause during scroll for performance
     let scrollTimeout;
     window.addEventListener('scroll', () => {
       isPaused = true;
@@ -82,14 +251,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 100);
     }, { passive: true });
 
-    // Initialize starfield
+    // Initialize and start animation
     initStarfield();
-    animateStarfield(performance.now());
+    animateStarfield();
 
     // Resize handler
     window.addEventListener('resize', () => {
       clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(initStarfield, 250);
+      scrollTimeout = setTimeout(() => {
+        initStarfield();
+      }, 250);
     });
   }
 

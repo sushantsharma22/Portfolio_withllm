@@ -1830,11 +1830,6 @@ body.loading * {
   main {
     padding-top: 140px;
   }
-}
-  
-  .nav-link span {
-    display: none;
-  }
   
   .hero-content {
     padding: 1rem;
@@ -1896,6 +1891,14 @@ body.loading * {
   .ai-assistant {
     bottom: 1rem;
     right: 1rem;
+  }
+  
+  .cert-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cert-item {
+    padding: 1.5rem;
   }
   
   .ai-chat-bubble {

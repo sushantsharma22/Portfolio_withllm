@@ -1,4 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Performance: Add scroll detection for lag-free scrolling
+  let scrollTimeout;
+  let isScrolling = false;
+
+  function handleScrollStart() {
+    if (!isScrolling) {
+      document.body.classList.add('is-scrolling');
+      isScrolling = true;
+    }
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      document.body.classList.remove('is-scrolling');
+      isScrolling = false;
+    }, 150);
+  }
+
+  window.addEventListener('scroll', handleScrollStart, { passive: true });
+
   // Preloader
   const preloader = document.getElementById('preloader');
   if (preloader) {
@@ -209,10 +227,9 @@ function initQuantumTitles() {
 function initSkillsAnimation() {
   const skillBars = document.querySelectorAll('.skill-progress');
   
-  // Set initial widths immediately
+  // Don't set initial widths - let them animate from 0
   skillBars.forEach(bar => {
-    const targetWidth = bar.getAttribute('data-progress');
-    bar.style.width = `${targetWidth}%`;
+    bar.style.width = '0%';
   });
   
   const skillObserver = new IntersectionObserver((entries) => {
@@ -221,12 +238,13 @@ function initSkillsAnimation() {
         const progressBar = entry.target;
         const targetWidth = progressBar.getAttribute('data-progress');
         
+        // Animate to target width after a delay
         setTimeout(() => {
           progressBar.style.width = `${targetWidth}%`;
-        }, 500);
+        }, 300);
       }
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.3 });
 
   skillBars.forEach(bar => skillObserver.observe(bar));
 }

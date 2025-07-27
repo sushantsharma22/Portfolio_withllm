@@ -296,6 +296,21 @@ body:not(.is-scrolling) * {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.logo-container {
+  flex-shrink: 0;
+}
+
+.neural-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 70%;
+}
+
+.theme-switcher {
+  flex-shrink: 0;
+}
+
 .futuristic-header::before {
   content: '';
   position: absolute;
@@ -363,9 +378,13 @@ body:not(.is-scrolling) * {
 .neural-nav ul {
   display: flex;
   list-style: none;
-  gap: 1rem;
+  gap: 0.5rem;
   transform: translateZ(30px);
   transform-style: preserve-3d;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-link {
@@ -973,6 +992,7 @@ section h2::after {
   position: relative;
   background: inherit;
   width: 50%;
+  margin-bottom: 2rem;
 }
 
 .timeline-item::after {
@@ -1004,6 +1024,10 @@ section h2::after {
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  transform: none;
+  transition: none;
 }
 
 .timeline-content h3 {
@@ -1760,20 +1784,53 @@ body.loading * {
 @media (max-width: 768px) {
   .futuristic-header {
     padding: 1rem;
+    height: auto;
+    min-height: 80px;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .logo-container {
+    order: 1;
+  }
+
+  .neural-nav {
+    order: 2;
+    max-width: 100%;
   }
   
   .neural-nav ul {
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.5rem;
     justify-content: center;
   }
   
   .nav-link {
     padding: 0.6rem 1rem;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    gap: 0.3rem;
   }
+
+  .nav-link span {
+    display: none;
+  }
+
+  .nav-link i {
+    font-size: 1.2rem;
+  }
+
+  .theme-switcher {
+    order: 3;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  /* Adjust main content for new header height */
+  main {
+    padding-top: 140px;
+  }
+}
   
   .nav-link span {
     display: none;
@@ -1954,6 +2011,9 @@ body.loading * {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
+  /* Performance optimizations */
+  contain: layout;
+  transform: translateZ(0);
 }
 
 .cert-item {
@@ -1963,13 +2023,43 @@ body.loading * {
   border-radius: 20px;
   padding: 2rem;
   position: relative;
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              border-color 0.3s ease;
+  /* Remove transitions during scroll */
+  transition: none;
   overflow: hidden;
-  transform: translateY(0);
+  transform: translateZ(0);
   contain: layout style paint;
-  will-change: transform;
+  will-change: auto;
+  backface-visibility: hidden;
+}
+
+/* Only animate on hover when not scrolling */
+body:not(.is-scrolling) .cert-item {
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
+}
+
+body:not(.is-scrolling) .cert-item:hover {
+  transform: translateY(-6px) translateZ(0);
+  border-color: rgba(108, 92, 231, 0.4);
+  box-shadow: 
+    0 15px 30px rgba(108, 92, 231, 0.15),
+    0 0 40px rgba(108, 92, 231, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body:not(.is-scrolling) .cert-item:hover::before {
+  opacity: 1;
+}
+
+/* Disable all effects during scroll */
+body.is-scrolling .cert-item {
+  transform: translateZ(0) !important;
+  transition: none !important;
+}
+
+body.is-scrolling .cert-item::before {
+  opacity: 0 !important;
 }
 
 .cert-item::before {
@@ -1984,21 +2074,8 @@ body.loading * {
     rgba(0, 212, 255, 0.05) 50%, 
     rgba(253, 121, 168, 0.08) 100%);
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.2s ease;
   z-index: -1;
-}
-
-.cert-item:hover {
-  transform: translateY(-6px);
-  border-color: rgba(108, 92, 231, 0.4);
-  box-shadow: 
-    0 15px 30px rgba(108, 92, 231, 0.15),
-    0 0 40px rgba(108, 92, 231, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.cert-item:hover::before {
-  opacity: 1;
 }
 
 .cert-icon {
@@ -2173,6 +2250,10 @@ body.loading * {
   backface-visibility: hidden;
   /* Optimize rendering */
   isolation: isolate;
+  /* Fixed dimensions for consistency */
+  height: 480px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Only animate on direct hover, not during scroll */
@@ -2228,6 +2309,7 @@ body.is-scrolling .project-card .project-overlay {
   height: 200px;
   overflow: hidden;
   background: var(--deep-space);
+  flex-shrink: 0;
 }
 
 .project-image img {
@@ -2238,6 +2320,42 @@ body.is-scrolling .project-card .project-overlay {
   background: var(--deep-space);
   will-change: auto;
   backface-visibility: hidden;
+}
+
+.project-content {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.project-content h3 {
+  color: var(--plasma-cyan);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.project-content p {
+  color: var(--neutron-white);
+  opacity: 0.9;
+  margin-bottom: 1rem;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.project-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.project-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: auto;
 }
 
 .project-overlay {

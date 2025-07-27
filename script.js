@@ -401,20 +401,150 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // HERO ANIMATIONS (OPTIMIZED)
+  // ENHANCED AI TITLE ANIMATION SYSTEM
   // ==========================================
   
-  // Quantum titles rotation (simplified)
+  // Enhanced quantum titles rotation with typing effect
   const titles = document.querySelectorAll('.title-item');
   let currentTitle = 0;
+  let isAnimating = false;
   
   if (titles.length > 0) {
-    setInterval(() => {
-      titles[currentTitle].classList.remove('active');
-      currentTitle = (currentTitle + 1) % titles.length;
-      titles[currentTitle].classList.add('active');
-    }, 3000);
+    // Initialize all titles as hidden except the first
+    titles.forEach((title, index) => {
+      if (index !== 0) {
+        title.style.opacity = '0';
+        title.style.transform = 'translate(-50%, -50%) translateZ(-50px) translateY(20px)';
+      }
+    });
+    
+    function switchTitle() {
+      if (isAnimating) return;
+      isAnimating = true;
+      
+      const currentTitleElement = titles[currentTitle];
+      const nextTitle = (currentTitle + 1) % titles.length;
+      const nextTitleElement = titles[nextTitle];
+      
+      // Fade out current title with slide effect
+      currentTitleElement.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      currentTitleElement.style.opacity = '0';
+      currentTitleElement.style.transform = 'translate(-50%, -50%) translateZ(-50px) translateY(-20px)';
+      currentTitleElement.classList.remove('active');
+      
+      setTimeout(() => {
+        // Prepare next title
+        nextTitleElement.style.transition = 'none';
+        nextTitleElement.style.opacity = '0';
+        nextTitleElement.style.transform = 'translate(-50%, -50%) translateZ(-50px) translateY(20px)';
+        nextTitleElement.classList.add('active');
+        
+        // Trigger reflow
+        nextTitleElement.offsetHeight;
+        
+        // Animate in next title
+        nextTitleElement.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        nextTitleElement.style.opacity = '1';
+        nextTitleElement.style.transform = 'translate(-50%, -50%) translateZ(0) translateY(0)';
+        
+        currentTitle = nextTitle;
+        
+        setTimeout(() => {
+          isAnimating = false;
+        }, 600);
+        
+      }, 500);
+    }
+    
+    // Start the animation cycle
+    setInterval(switchTitle, 4000); // Slower transition for better reading
+    
+    // Add hover pause functionality
+    const titleContainer = document.querySelector('.quantum-titles');
+    let isPaused = false;
+    let intervalId = setInterval(switchTitle, 4000);
+    
+    if (titleContainer) {
+      titleContainer.addEventListener('mouseenter', () => {
+        isPaused = true;
+        clearInterval(intervalId);
+      });
+      
+      titleContainer.addEventListener('mouseleave', () => {
+        if (isPaused) {
+          isPaused = false;
+          intervalId = setInterval(switchTitle, 4000);
+        }
+      });
+    }
   }
+  
+  // ==========================================
+  // AI PARTICLE EFFECTS FOR RON
+  // ==========================================
+  
+  function createAIParticles() {
+    const heroSection = document.querySelector('#hero');
+    const glitchText = document.querySelector('.glitch-text');
+    
+    if (!heroSection || !glitchText) return;
+    
+    // Create particle container
+    const particleContainer = document.createElement('div');
+    particleContainer.className = 'ai-particles';
+    particleContainer.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    `;
+    heroSection.appendChild(particleContainer);
+    
+    // Create floating AI particles
+    for (let i = 0; i < 20; i++) {
+      createAIParticle(particleContainer);
+    }
+  }
+  
+  function createAIParticle(container) {
+    const particle = document.createElement('div');
+    particle.className = 'ai-particle';
+    
+    // Random starting position
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    const size = Math.random() * 4 + 2;
+    const duration = Math.random() * 20 + 10;
+    
+    particle.style.cssText = `
+      position: absolute;
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: radial-gradient(circle, var(--plasma-cyan), transparent);
+      border-radius: 50%;
+      opacity: ${Math.random() * 0.8 + 0.2};
+      animation: floatAI ${duration}s linear infinite;
+      box-shadow: 0 0 10px var(--plasma-cyan);
+    `;
+    
+    container.appendChild(particle);
+    
+    // Remove and recreate particle after animation
+    setTimeout(() => {
+      if (particle.parentNode) {
+        particle.remove();
+        createAIParticle(container);
+      }
+    }, duration * 1000);
+  }
+  
+  // Initialize AI particles
+  createAIParticles();
 
   // Stats counter (performance optimized)
   const statNumbers = document.querySelectorAll('.stat-number');
@@ -510,26 +640,111 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // AI ASSISTANT (SIMPLIFIED)
+  // AI ASSISTANT (THOUGHT BUBBLES)
   // ==========================================
   
   const aiAssistant = document.getElementById('ai-assistant');
   if (aiAssistant) {
-    const responses = [
-      "Hi! I'm ARIA, Sushant's AI guide. His portfolio showcases 25+ GitHub repositories!",
-      "Sushant specializes in Machine Learning, AI, and has explored 100+ technologies!",
-      "Check out his EdgeBEV-Transformer project - it's cutting-edge autonomous vehicle AI!",
-      "He's available for internship opportunities starting May 2025 at University of Windsor!"
+    const thoughtMessages = [
+      "Hey there! I'm RON, Sushant's AI assistant. I know everything about his amazing work and achievements.",
+      "Did you know Sushant has 25+ GitHub repositories? Each one showcases his incredible coding skills!",
+      "He's explored over 100 technologies! From Python and AI to advanced transformer architectures.",
+      "His EdgeBEV-Transformer project is mind-blowing - real-time AI for autonomous vehicles on edge devices!",
+      "Sushant saved ₹8,00,000 annually by replacing consultants with his custom ML analytics. Impressive!",
+      "He's available for internships starting May 2025 at University of Windsor. Perfect timing!",
+      "His expertise spans Machine Learning, Computer Vision, NLP, and cutting-edge AI research.",
+      "Check out his PyTorch and TensorFlow projects - they're absolutely brilliant!",
+      "He's published research on sentiment analysis and organized 50+ coding events with 200+ participants.",
+      "From Django web apps to NVIDIA DeepStream - Sushant's portfolio is incredibly diverse!",
+      "His multimodal AI systems and neural network architectures are truly next-level stuff.",
+      "Want to know more? I've got tons of insights about his projects and achievements!"
     ];
     
-    let responseIndex = 0;
+    let thoughtIndex = 0;
+    let isExpanded = false;
     const chatBubble = document.getElementById('ai-chat');
     
     if (chatBubble) {
-      aiAssistant.addEventListener('click', () => {
-        chatBubble.querySelector('p').textContent = responses[responseIndex];
-        responseIndex = (responseIndex + 1) % responses.length;
+      // Remove hover effects - no preview message
+      aiAssistant.addEventListener('mouseenter', () => {
+        if (!isExpanded) {
+          aiAssistant.style.filter = 'brightness(1.2)';
+        }
       });
+      
+      aiAssistant.addEventListener('mouseleave', () => {
+        if (!isExpanded) {
+          aiAssistant.style.filter = 'brightness(1)';
+        }
+      });
+      
+      // Click handler - show thought bubbles
+      aiAssistant.addEventListener('click', (e) => {
+        if (!isExpanded) {
+          // First click - show welcome thought
+          isExpanded = true;
+          aiAssistant.classList.add('expanded');
+          
+          // Show typing indicator briefly
+          chatBubble.innerHTML = `
+            <div class="ai-typing">
+              RON thinking
+              <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+          `;
+          
+          // Show first thought after brief delay
+          setTimeout(() => {
+            showThought(thoughtMessages[0]);
+            thoughtIndex = 1;
+          }, 1000);
+          
+        } else {
+          // Show next thought
+          const thought = thoughtMessages[thoughtIndex];
+          showThought(thought);
+          thoughtIndex = (thoughtIndex + 1) % thoughtMessages.length;
+        }
+        
+        // Add visual feedback
+        aiAssistant.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+          aiAssistant.style.transform = 'scale(1)';
+        }, 150);
+      });
+      
+      // Click outside to collapse
+      document.addEventListener('click', (e) => {
+        if (!aiAssistant.contains(e.target) && isExpanded) {
+          isExpanded = false;
+          thoughtIndex = 0;
+          aiAssistant.classList.remove('expanded');
+          chatBubble.innerHTML = '';
+        }
+      });
+      
+      // Function to show a thought bubble
+      function showThought(message) {
+        chatBubble.innerHTML = `<p class="ai-thought"></p>`;
+        const thoughtElement = chatBubble.querySelector('.ai-thought');
+        
+        // Typing effect for the thought
+        let i = 0;
+        const typeInterval = setInterval(() => {
+          if (i < message.length) {
+            thoughtElement.textContent = thoughtElement.textContent.replace('💭 ', '') + message.charAt(i);
+            // Re-add the thought emoji
+            thoughtElement.textContent = '💭 ' + thoughtElement.textContent.replace('💭 ', '');
+            i++;
+          } else {
+            clearInterval(typeInterval);
+          }
+        }, 25);
+      }
     }
   }
 

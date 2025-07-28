@@ -1,5 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Portfolio Loading - Interactive Starfield Version');
+  console.log('🚀 Portfolio Loading - Mobile Optimized Version');
+  
+  // ==========================================
+  // PERFORMANCE MONITORING
+  // ==========================================
+  
+  const startTime = performance.now();
+  const deviceInfo = {
+    isMobile: window.innerWidth < 768,
+    isLowEnd: navigator.hardwareConcurrency < 4,
+    isVeryLowEnd: navigator.hardwareConcurrency < 2 || window.innerWidth < 480,
+    cores: navigator.hardwareConcurrency,
+    screenWidth: window.innerWidth,
+    userAgent: navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'
+  };
+  
+  console.log('📱 Device Info:', deviceInfo);
+  
+  // Measure initial load performance
+  window.addEventListener('load', () => {
+    const loadTime = performance.now() - startTime;
+    console.log(`⚡ Page loaded in ${Math.round(loadTime)}ms`);
+    
+    if (loadTime > 3000) {
+      console.warn('⚠️ Slow loading detected, applying additional optimizations');
+      // Apply emergency optimizations
+      document.querySelectorAll('.fade-in').forEach(el => {
+        el.style.animation = 'none';
+        el.style.opacity = '1';
+      });
+    }
+  });
   
   // ==========================================
   // INTERACTIVE STARFIELD WITH MOUSE MOVEMENT & SHOOTING STARS
@@ -265,15 +296,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // DISABLE HEAVY ANIMATIONS ON MOBILE/LOW-END
+  // AGGRESSIVE MOBILE OPTIMIZATION
   // ==========================================
   
   function optimizeForDevice() {
     const isMobile = window.innerWidth < 768;
     const isLowEnd = navigator.hardwareConcurrency < 4;
+    const isVeryLowEnd = navigator.hardwareConcurrency < 2 || window.innerWidth < 480;
+    
+    console.log('🔧 Device optimization:', { isMobile, isLowEnd, isVeryLowEnd, cores: navigator.hardwareConcurrency });
     
     if (isMobile || isLowEnd) {
-      // Disable heavy background animations
+      // Disable ALL heavy background animations
       const neuralBg = document.getElementById('neural-network-bg');
       const quantumField = document.getElementById('quantum-field');
       const matrixCanvas = document.getElementById('matrix-canvas');
@@ -282,26 +316,70 @@ document.addEventListener('DOMContentLoaded', () => {
       if (quantumField) quantumField.style.display = 'none';
       if (matrixCanvas) matrixCanvas.style.display = 'none';
       
-      // Reduce particle effects
-      const particles = document.querySelectorAll('.particle, .quantum-particle');
-      particles.forEach(p => p.style.display = 'none');
+      // Remove ALL particle effects
+      const particles = document.querySelectorAll('.particle, .quantum-particle, .ai-particle');
+      particles.forEach(p => p.remove());
       
-      console.log('🔧 Heavy animations disabled for performance');
+      // Disable AI particles creation
+      const particleContainer = document.querySelector('.ai-particles');
+      if (particleContainer) particleContainer.remove();
+      
+      // Simplify animations
+      document.documentElement.style.setProperty('--animation-duration', '1s');
+      document.documentElement.style.setProperty('--transition-duration', '0.2s');
+      
+      console.log('🔧 Heavy animations disabled for mobile/low-end device');
+    }
+    
+    if (isVeryLowEnd) {
+      // Disable even more animations for very low-end devices
+      const glitchElements = document.querySelectorAll('.glitch-text');
+      glitchElements.forEach(el => {
+        el.style.animation = 'none';
+        el.style.textShadow = 'none';
+      });
+      
+      // Disable title switching animation
+      const titles = document.querySelectorAll('.title-item');
+      titles.forEach((title, index) => {
+        if (index !== 0) title.style.display = 'none';
+      });
+      
+      console.log('🔧 Ultra-lightweight mode enabled for very low-end device');
     }
   }
+  // ==========================================
+  // SERVICE WORKER REGISTRATION FOR PERFORMANCE
+  // ==========================================
   
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('✅ Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.log('❌ Service Worker registration failed:', error);
+        });
+    });
+  }
+
+  // Initialize optimization immediately
   optimizeForDevice();
 
   // ==========================================
-  // LIGHTWEIGHT HEADER SCROLL
+  // LIGHTWEIGHT HEADER SCROLL - THROTTLED
   // ==========================================
   
   let headerScrollTimeout;
+  let isScrolling = false;
   const header = document.querySelector('.futuristic-header');
   
   function updateHeaderScroll() {
-    clearTimeout(headerScrollTimeout);
-    headerScrollTimeout = setTimeout(() => {
+    if (isScrolling) return;
+    isScrolling = true;
+    
+    requestAnimationFrame(() => {
       if (header) {
         if (window.scrollY > 50) {
           header.classList.add('scrolled');
@@ -309,10 +387,21 @@ document.addEventListener('DOMContentLoaded', () => {
           header.classList.remove('scrolled');
         }
       }
-    }, 10);
+      isScrolling = false;
+    });
   }
   
-  window.addEventListener('scroll', updateHeaderScroll, { passive: true });
+  // Use passive scroll listener with throttling
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        updateHeaderScroll();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
 
   // ==========================================
   // BULLETPROOF NAVIGATION - CLEAN VERSION
@@ -526,15 +615,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // ENHANCED AI TITLE ANIMATION SYSTEM
+  // MOBILE-OPTIMIZED AI TITLE ANIMATION SYSTEM
   // ==========================================
   
   // Enhanced quantum titles rotation with typing effect
   const titles = document.querySelectorAll('.title-item');
   let currentTitle = 0;
   let isAnimating = false;
+  const isMobile = window.innerWidth < 768;
   
-  if (titles.length > 0) {
+  if (titles.length > 0 && !isMobile) { // Skip complex animations on mobile
     // Initialize all titles as hidden except the first
     titles.forEach((title, index) => {
       if (index !== 0) {
@@ -551,64 +641,56 @@ document.addEventListener('DOMContentLoaded', () => {
       const nextTitle = (currentTitle + 1) % titles.length;
       const nextTitleElement = titles[nextTitle];
       
-      // Fade out current title with slide effect
-      currentTitleElement.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      // Simplified fade transition
+      currentTitleElement.style.transition = 'opacity 0.3s ease';
       currentTitleElement.style.opacity = '0';
-      currentTitleElement.style.transform = 'translate(-50%, -50%) translateZ(-50px) translateY(-20px)';
       currentTitleElement.classList.remove('active');
       
       setTimeout(() => {
-        // Prepare next title
-        nextTitleElement.style.transition = 'none';
-        nextTitleElement.style.opacity = '0';
-        nextTitleElement.style.transform = 'translate(-50%, -50%) translateZ(-50px) translateY(20px)';
+        nextTitleElement.style.transition = 'opacity 0.3s ease';
+        nextTitleElement.style.opacity = '1';
         nextTitleElement.classList.add('active');
         
-        // Trigger reflow
-        nextTitleElement.offsetHeight;
-        
-        // Animate in next title
-        nextTitleElement.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-        nextTitleElement.style.opacity = '1';
-        nextTitleElement.style.transform = 'translate(-50%, -50%) translateZ(0) translateY(0)';
-        
         currentTitle = nextTitle;
-        
-        setTimeout(() => {
-          isAnimating = false;
-        }, 600);
-        
-      }, 500);
+        isAnimating = false;
+      }, 300);
     }
     
-    // Start the animation cycle
-    setInterval(switchTitle, 4000); // Slower transition for better reading
+    // Slower transition for better performance
+    const titleInterval = setInterval(switchTitle, 5000);
     
-    // Add hover pause functionality
+    // Pause on hover (desktop only)
     const titleContainer = document.querySelector('.quantum-titles');
-    let isPaused = false;
-    let intervalId = setInterval(switchTitle, 4000);
-    
-    if (titleContainer) {
+    if (titleContainer && !isMobile) {
       titleContainer.addEventListener('mouseenter', () => {
-        isPaused = true;
-        clearInterval(intervalId);
+        clearInterval(titleInterval);
       });
       
       titleContainer.addEventListener('mouseleave', () => {
-        if (isPaused) {
-          isPaused = false;
-          intervalId = setInterval(switchTitle, 4000);
-        }
+        setInterval(switchTitle, 5000);
       });
     }
+  } else if (titles.length > 0 && isMobile) {
+    // Mobile: show only first title, hide others
+    titles.forEach((title, index) => {
+      if (index !== 0) {
+        title.style.display = 'none';
+      }
+    });
+    console.log('🔧 Title animations disabled for mobile');
   }
   
   // ==========================================
-  // AI PARTICLE EFFECTS FOR RON
+  // MOBILE-OPTIMIZED AI PARTICLES (DISABLED ON MOBILE)
   // ==========================================
   
   function createAIParticles() {
+    // Skip particles entirely on mobile
+    if (window.innerWidth < 768 || navigator.hardwareConcurrency < 4) {
+      console.log('🔧 AI particles disabled for mobile/low-end device');
+      return;
+    }
+    
     const heroSection = document.querySelector('#hero');
     const glitchText = document.querySelector('.glitch-text');
     
@@ -628,8 +710,8 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     heroSection.appendChild(particleContainer);
     
-    // Create floating AI particles
-    for (let i = 0; i < 20; i++) {
+    // Create fewer floating AI particles for performance
+    for (let i = 0; i < 8; i++) { // Reduced from 20 to 8
       createAIParticle(particleContainer);
     }
   }
@@ -641,8 +723,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Random starting position
     const x = Math.random() * window.innerWidth;
     const y = Math.random() * window.innerHeight;
-    const size = Math.random() * 4 + 2;
-    const duration = Math.random() * 20 + 10;
+    const size = Math.random() * 2 + 1; // Smaller particles
+    const duration = Math.random() * 15 + 8; // Shorter duration
     
     particle.style.cssText = `
       position: absolute;
@@ -652,9 +734,9 @@ document.addEventListener('DOMContentLoaded', () => {
       height: ${size}px;
       background: radial-gradient(circle, var(--plasma-cyan), transparent);
       border-radius: 50%;
-      opacity: ${Math.random() * 0.8 + 0.2};
+      opacity: ${Math.random() * 0.6 + 0.2};
       animation: floatAI ${duration}s linear infinite;
-      box-shadow: 0 0 10px var(--plasma-cyan);
+      box-shadow: 0 0 5px var(--plasma-cyan);
     `;
     
     container.appendChild(particle);

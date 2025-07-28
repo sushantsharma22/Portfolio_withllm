@@ -1,4 +1,4 @@
-// Simple Star Field with Shooting Stars - Color Variants
+// Lightweight Star Field - Mobile Optimized
 class SimpleStarField {
   constructor() {
     this.canvas = null;
@@ -8,7 +8,35 @@ class SimpleStarField {
     this.mouse = { x: 0, y: 0 };
     this.mouseTarget = { x: 0, y: 0 };
     this.time = 0;
+    this.isMobile = window.innerWidth < 768 || navigator.hardwareConcurrency < 4;
+    this.isLowPerformance = navigator.hardwareConcurrency < 2 || window.innerWidth < 480;
+    
+    // Skip heavy animations on low-end devices
+    if (this.isLowPerformance) {
+      this.createStaticBackground();
+      return;
+    }
+    
     this.init();
+  }
+
+  createStaticBackground() {
+    // Create a simple CSS background for very low-end devices
+    const bg = document.createElement('div');
+    bg.id = 'simple-cosmic-bg';
+    bg.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -7;
+      background: linear-gradient(135deg, #000013, #0B0C2A, #1E1B4B);
+      pointer-events: none;
+    `;
+    document.body.appendChild(bg);
+    console.log('🔧 Using static background for low-performance device');
+    return;
   }
 
   init() {
@@ -70,7 +98,13 @@ class SimpleStarField {
 
   generateStars() {
     this.stars = [];
-    const numStars = Math.min(200, Math.floor((this.canvas.width * this.canvas.height) / 8000));
+    // Drastically reduce stars for mobile
+    let numStars;
+    if (this.isMobile) {
+      numStars = Math.min(50, Math.floor((this.canvas.width * this.canvas.height) / 20000)); // Much fewer stars
+    } else {
+      numStars = Math.min(120, Math.floor((this.canvas.width * this.canvas.height) / 10000));
+    }
     
     for (let i = 0; i < numStars; i++) {
       this.stars.push({
@@ -78,11 +112,11 @@ class SimpleStarField {
         y: Math.random() * this.canvas.height,
         originalX: 0,
         originalY: 0,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.8 + 0.2,
-        speed: Math.random() * 0.5 + 0.1,
+        size: Math.random() * 1.5 + 0.5, // Smaller stars
+        opacity: Math.random() * 0.6 + 0.4,
+        speed: Math.random() * 0.3 + 0.1,
         twinkle: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * 0.02 + 0.01
+        twinkleSpeed: Math.random() * 0.01 + 0.005 // Slower twinkle
       });
     }
 
@@ -96,17 +130,21 @@ class SimpleStarField {
   setupEventListeners() {
     window.addEventListener('resize', () => this.resize());
     
-    document.addEventListener('mousemove', (e) => {
-      this.mouseTarget.x = e.clientX;
-      this.mouseTarget.y = e.clientY;
-    });
+    // Reduce mouse tracking frequency on mobile
+    if (!this.isMobile) {
+      document.addEventListener('mousemove', (e) => {
+        this.mouseTarget.x = e.clientX;
+        this.mouseTarget.y = e.clientY;
+      });
+    }
 
-    // Create shooting stars periodically
+    // Reduce shooting star frequency drastically on mobile
+    const shootingStarInterval = this.isMobile ? 8000 : 3000; // Much less frequent on mobile
     setInterval(() => {
-      if (Math.random() < 0.3) {
+      if (Math.random() < (this.isMobile ? 0.1 : 0.3)) { // Much lower chance on mobile
         this.createShootingStar();
       }
-    }, 2000);
+    }, shootingStarInterval);
 
     // Listen for theme changes
     const observer = new MutationObserver(() => {
@@ -116,8 +154,11 @@ class SimpleStarField {
   }
 
   updateMousePosition() {
-    this.mouse.x += (this.mouseTarget.x - this.mouse.x) * 0.05;
-    this.mouse.y += (this.mouseTarget.y - this.mouse.y) * 0.05;
+    // Skip mouse effects on mobile
+    if (this.isMobile) return;
+    
+    this.mouse.x += (this.mouseTarget.x - this.mouse.x) * 0.03; // Slower response
+    this.mouse.y += (this.mouseTarget.y - this.mouse.y) * 0.03;
   }
 
   createShootingStar() {
@@ -173,32 +214,34 @@ class SimpleStarField {
     const starColor = this.getStarColor();
     
     this.stars.forEach(star => {
-      // Mouse parallax effect
-      const dx = this.mouse.x - this.canvas.width / 2;
-      const dy = this.mouse.y - this.canvas.height / 2;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const maxDistance = Math.sqrt((this.canvas.width / 2) ** 2 + (this.canvas.height / 2) ** 2);
-      const influence = Math.max(0, 1 - distance / maxDistance) * 0.0002;
+      // Simplified mouse parallax effect (skip on mobile)
+      if (!this.isMobile) {
+        const dx = this.mouse.x - this.canvas.width / 2;
+        const dy = this.mouse.y - this.canvas.height / 2;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = Math.sqrt((this.canvas.width / 2) ** 2 + (this.canvas.height / 2) ** 2);
+        const influence = Math.max(0, 1 - distance / maxDistance) * 0.0001; // Reduced influence
 
-      star.x = star.originalX + dx * influence * (star.size + 1);
-      star.y = star.originalY + dy * influence * (star.size + 1);
+        star.x = star.originalX + dx * influence * (star.size + 1);
+        star.y = star.originalY + dy * influence * (star.size + 1);
+      }
 
-      // Twinkle effect
+      // Simplified twinkle effect
       star.twinkle += star.twinkleSpeed;
-      const twinkleOpacity = star.opacity * (0.5 + 0.5 * Math.sin(star.twinkle));
+      const twinkleOpacity = star.opacity * (0.7 + 0.3 * Math.sin(star.twinkle));
 
-      // Draw star with theme color
+      // Draw star with theme color (simplified)
       this.ctx.globalAlpha = twinkleOpacity;
       this.ctx.fillStyle = starColor;
       this.ctx.beginPath();
       this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Add glow for larger stars
-      if (star.size > 1.5) {
-        this.ctx.globalAlpha = twinkleOpacity * 0.3;
+      // Skip glow effect on mobile for performance
+      if (!this.isMobile && star.size > 1.2) {
+        this.ctx.globalAlpha = twinkleOpacity * 0.2;
         this.ctx.beginPath();
-        this.ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2);
+        this.ctx.arc(star.x, star.y, star.size * 1.5, 0, Math.PI * 2);
         this.ctx.fill();
       }
     });
@@ -207,6 +250,9 @@ class SimpleStarField {
   }
 
   drawShootingStars() {
+    // Skip shooting stars on very low-end devices
+    if (this.isLowPerformance) return;
+    
     const starColor = this.getStarColor();
     
     this.shootingStars = this.shootingStars.filter(star => {
@@ -218,40 +264,37 @@ class SimpleStarField {
       star.x = star.startX + (star.endX - star.startX) * star.progress;
       star.y = star.startY + (star.endY - star.startY) * star.progress;
 
-      // Add to trail
+      // Simplified trail (shorter on mobile)
       star.trail.push({ x: star.x, y: star.y });
-      if (star.trail.length > 15) {
+      const maxTrail = this.isMobile ? 8 : 12; // Shorter trail on mobile
+      if (star.trail.length > maxTrail) {
         star.trail.shift();
       }
 
       // Fade out towards the end
       star.opacity = Math.max(0, 1 - star.progress);
 
-      // Draw trail
+      // Simplified trail drawing
       this.ctx.strokeStyle = starColor;
-      this.ctx.lineWidth = star.size;
+      this.ctx.lineWidth = this.isMobile ? star.size * 0.5 : star.size;
       this.ctx.lineCap = 'round';
 
-      for (let i = 1; i < star.trail.length; i++) {
-        const trailOpacity = (i / star.trail.length) * star.opacity;
-        this.ctx.globalAlpha = trailOpacity;
+      // Draw trail with reduced complexity
+      if (star.trail.length > 1) {
+        this.ctx.globalAlpha = star.opacity * 0.6;
         this.ctx.beginPath();
-        this.ctx.moveTo(star.trail[i - 1].x, star.trail[i - 1].y);
-        this.ctx.lineTo(star.trail[i].x, star.trail[i].y);
+        this.ctx.moveTo(star.trail[0].x, star.trail[0].y);
+        for (let i = 1; i < star.trail.length; i++) {
+          this.ctx.lineTo(star.trail[i].x, star.trail[i].y);
+        }
         this.ctx.stroke();
       }
 
-      // Draw bright head
+      // Draw head (simplified)
       this.ctx.globalAlpha = star.opacity;
       this.ctx.fillStyle = starColor;
       this.ctx.beginPath();
-      this.ctx.arc(star.x, star.y, star.size * 1.5, 0, Math.PI * 2);
-      this.ctx.fill();
-
-      // Add glow
-      this.ctx.globalAlpha = star.opacity * 0.5;
-      this.ctx.beginPath();
-      this.ctx.arc(star.x, star.y, star.size * 4, 0, Math.PI * 2);
+      this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
       this.ctx.fill();
 
       return true;
@@ -261,13 +304,24 @@ class SimpleStarField {
   }
 
   render() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // Use lower frame rate on mobile
+    const targetFPS = this.isMobile ? 30 : 60;
+    const frameDelay = 1000 / targetFPS;
     
-    this.updateMousePosition();
-    this.drawStars();
-    this.drawShootingStars();
+    if (!this.lastFrameTime) this.lastFrameTime = 0;
+    const currentTime = performance.now();
     
-    this.time += 0.016;
+    if (currentTime - this.lastFrameTime >= frameDelay) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      this.updateMousePosition();
+      this.drawStars();
+      this.drawShootingStars();
+      
+      this.time += 0.016;
+      this.lastFrameTime = currentTime;
+    }
+    
     requestAnimationFrame(() => this.render());
   }
 }

@@ -235,18 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       animationId = requestAnimationFrame(animateStarfield);
     }
-          
-          ctx.beginPath();
-          ctx.moveTo(shootingStar.trail[0].x, shootingStar.trail[0].y);
-          shootingStar.trail.forEach((point, index) => {
-            if (index > 0) {
-              ctx.lineTo(point.x, point.y);
-            }
-          });
-          ctx.stroke();
-          
-          // Draw bright head
-          ctx.fillStyle = `rgba(255, 255, 255, ${shootingStar.alpha})`;
+
     // Initialize and start
     initStarfield();
     animateStarfield(0);

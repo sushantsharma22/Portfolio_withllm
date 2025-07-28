@@ -41,8 +41,6 @@
 
 /* Lazy loading and optimization for project images */
 .project-image img {
-  loading: lazy;
-  decoding: async;
   /* Use smaller images on mobile */
   object-fit: cover;
   image-rendering: auto;

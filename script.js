@@ -389,15 +389,140 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // THEME SWITCHER
+  // COLOR VARIANT SWITCHER SYSTEM (COSMIC THEME BASE)
   // ==========================================
   
   const themeToggle = document.getElementById('theme-toggle');
+  const colorVariants = ['default', 'blue-variant', 'purple-variant', 'green-variant', 'red-variant'];
+  const variantNames = ['Cosmic Default', 'Cosmic Blue', 'Cosmic Purple', 'Cosmic Green', 'Cosmic Pink'];
+  const variantIcons = ['🌌', '💙', '💜', '💚', '💖'];
+  
+  let currentVariantIndex = 0;
+  
+  // Load saved variant from localStorage
+  const savedVariant = localStorage.getItem('portfolio-color-variant');
+  if (savedVariant) {
+    const variantIndex = colorVariants.indexOf(savedVariant);
+    if (variantIndex !== -1) {
+      currentVariantIndex = variantIndex;
+      if (savedVariant !== 'default') {
+        document.body.classList.add(savedVariant);
+      }
+    }
+  }
+  
+  // Update theme button icon
+  function updateVariantIcon() {
+    if (themeToggle) {
+      const icon = themeToggle.querySelector('i');
+      if (icon) {
+        // Update icon to represent current variant
+        icon.className = 'fas fa-palette';
+        themeToggle.setAttribute('title', `Current: ${variantNames[currentVariantIndex]} - Click to change colors`);
+        
+        // Add variant indicator with emoji
+        let indicator = themeToggle.querySelector('.theme-indicator');
+        if (!indicator) {
+          indicator = document.createElement('span');
+          indicator.className = 'theme-indicator';
+          indicator.style.cssText = `
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 12px;
+            background: var(--glass-cosmic);
+            border: 1px solid var(--glass-border-cosmic);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+          `;
+          themeToggle.appendChild(indicator);
+        }
+        indicator.textContent = variantIcons[currentVariantIndex];
+      }
+    }
+  }
+  
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-theme');
-      console.log('🎨 Theme toggled');
+      // Remove current variant
+      if (currentVariantIndex !== 0) {
+        document.body.classList.remove(colorVariants[currentVariantIndex]);
+      }
+      
+      // Move to next variant
+      currentVariantIndex = (currentVariantIndex + 1) % colorVariants.length;
+      
+      // Apply new variant
+      if (currentVariantIndex !== 0) {
+        document.body.classList.add(colorVariants[currentVariantIndex]);
+      }
+      
+      // Save variant preference
+      localStorage.setItem('portfolio-color-variant', colorVariants[currentVariantIndex]);
+      
+      // Update icon
+      updateVariantIcon();
+      
+      // Show variant change notification
+      showVariantNotification();
+      
+      console.log(`🎨 Color variant changed to: ${variantNames[currentVariantIndex]}`);
     });
+    
+    // Initialize icon
+    updateVariantIcon();
+  }
+  
+  // Variant change notification
+  function showVariantNotification() {
+    let notification = document.querySelector('.theme-notification');
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.className = 'theme-notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: var(--glass-cosmic);
+        border: 1px solid var(--glass-border-cosmic);
+        border-radius: 15px;
+        padding: 15px 20px;
+        color: var(--neutron-white);
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 500;
+        backdrop-filter: blur(20px);
+        z-index: 10000;
+        transform: translateX(100%);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      `;
+      document.body.appendChild(notification);
+    }
+    
+    notification.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 20px;">${variantIcons[currentVariantIndex]}</span>
+        <div>
+          <div style="font-size: 14px; opacity: 0.8;">Color Changed</div>
+          <div style="font-size: 16px; font-weight: 600;">${variantNames[currentVariantIndex]}</div>
+        </div>
+      </div>
+    `;
+    
+    // Animate in
+    setTimeout(() => {
+      notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Animate out
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+    }, 3000);
   }
 
   // ==========================================
@@ -597,6 +722,56 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================
+  // SKILL BAR ANIMATIONS
+  // ==========================================
+  
+  function animateSkillBars() {
+    const skillBars = document.querySelectorAll('.skill-progress');
+    
+    skillBars.forEach((bar, index) => {
+      const progress = bar.getAttribute('data-progress');
+      if (progress) {
+        // Reset width first
+        bar.style.width = '0%';
+        
+        // Add a staggered delay for each bar
+        setTimeout(() => {
+          bar.style.transition = 'width 2s ease-in-out';
+          bar.style.width = progress + '%';
+        }, 100 + (index * 50)); // 50ms delay between each bar
+      }
+    });
+  }
+  
+  // Observe skills section for skill bar animation
+  const skillsSection = document.getElementById('skills');
+  if (skillsSection) {
+    const skillsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateSkillBars();
+          skillsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    
+    skillsObserver.observe(skillsSection);
+  }
+  
+  // Fallback: animate skill bars after page load if not triggered by observer
+  setTimeout(() => {
+    const skillBars = document.querySelectorAll('.skill-progress');
+    const hasAnimated = Array.from(skillBars).some(bar => 
+      parseInt(bar.style.width) > 0
+    );
+    
+    if (!hasAnimated && skillBars.length > 0) {
+      console.log('🔧 Triggering skill bar animation fallback');
+      animateSkillBars();
+    }
+  }, 3000);
+
+  // ==========================================
   // PROJECT MODAL (SIMPLIFIED)
   // ==========================================
   
@@ -651,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
       "He's explored over 100 technologies! From Python and AI to advanced transformer architectures.",
       "His EdgeBEV-Transformer project is mind-blowing - real-time AI for autonomous vehicles on edge devices!",
       "Sushant saved ₹8,00,000 annually by replacing consultants with his custom ML analytics. Impressive!",
-      "He's available for internships starting May 2025 at University of Windsor. Perfect timing!",
+      "He's available for full-time opportunities starting May 2025 at University of Windsor. Perfect timing!",
       "His expertise spans Machine Learning, Computer Vision, NLP, and cutting-edge AI research.",
       "Check out his PyTorch and TensorFlow projects - they're absolutely brilliant!",
       "He's published research on sentiment analysis and organized 50+ coding events with 200+ participants.",

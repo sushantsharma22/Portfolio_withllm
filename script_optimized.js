@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
       "Hi! I'm ARIA, Sushant's AI guide. His portfolio showcases 25+ GitHub repositories!",
       "Sushant specializes in Machine Learning, AI, and has explored 100+ technologies!",
       "Check out his EdgeBEV-Transformer project - it's cutting-edge autonomous vehicle AI!",
-      "He's available for internship opportunities starting May 2025 at University of Windsor!"
+      "He's available for full-time opportunities starting May 2025 at University of Windsor!"
     ];
     
     let responseIndex = 0;

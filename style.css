@@ -28,9 +28,245 @@
   --primary-bg: #000013;
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(6, 255, 165, 0.2);
+}
+
+/* ==============================================
+   THEME SYSTEM - Color Variations for Cosmic Theme
+============================================== */
+
+/* Blue Color Variant */
+body.blue-variant {
+  /* Keep cosmic background - only change text and accent colors */
+  --neutron-white: #4fc3f7;
+  --plasma-cyan: #29b6f6;
+  --cosmic-pink: #4fc3f7;
+  --star-blue: #29b6f6;
+  --stardust-gray: #81d4fa;
+  --quantum-glow: rgba(79, 195, 247, 0.8);
+  --cosmic-glow: rgba(79, 195, 247, 0.6);
+}
+
+/* Purple Color Variant */
+body.purple-variant {
+  /* Keep cosmic background - only change text and accent colors */
+  --neutron-white: #ce93d8;
+  --plasma-cyan: #ab47bc;
+  --cosmic-pink: #e1bee7;
+  --star-blue: #ba68c8;
+  --stardust-gray: #d1c4e9;
+  --quantum-glow: rgba(206, 147, 216, 0.8);
+  --cosmic-glow: rgba(171, 71, 188, 0.6);
+  --nebula-glow: rgba(206, 147, 216, 0.5);
+  --wormhole-gradient: linear-gradient(135deg, #ce93d8, #ab47bc, #8e24aa);
+}
+
+/* Green Color Variant */
+body.green-variant {
+  /* Keep cosmic background - only change text and accent colors */
+  --neutron-white: #81c784;
+  --plasma-cyan: #66bb6a;
+  --cosmic-pink: #a5d6a7;
+  --star-blue: #4caf50;
+  --stardust-gray: #c8e6c9;
+  --quantum-glow: rgba(129, 199, 132, 0.8);
+  --cosmic-glow: rgba(102, 187, 106, 0.6);
+  --nebula-glow: rgba(129, 199, 132, 0.5);
+  --wormhole-gradient: linear-gradient(135deg, #81c784, #66bb6a, #4caf50);
+}
+
+/* Red Color Variant */
+body.red-variant {
+  /* Keep cosmic background - only change text and accent colors */
+  --neutron-white: #f48fb1;
+  --plasma-cyan: #e91e63;
+  --cosmic-pink: #f8bbd9;
+  --star-blue: #ec407a;
+  --stardust-gray: #fce4ec;
+  --quantum-glow: rgba(244, 143, 177, 0.8);
+  --cosmic-glow: rgba(233, 30, 99, 0.6);
+  --nebula-glow: rgba(244, 143, 177, 0.5);
+  --wormhole-gradient: linear-gradient(135deg, #f48fb1, #e91e63, #c2185b);
+}
+
+/* ==============================================
+   ANIMATIONS AND KEYFRAMES
+============================================== */
+
+@keyframes floatAI {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+  100% { transform: translateY(-40px) rotate(360deg); opacity: 0; }
+}
+
+body.purple-theme p,
+body.purple-theme span,
+body.purple-theme li,
+body.purple-theme .animated-text {
+  color: #d1c4e9 !important;
+}
+
+body.purple-theme .nav-link {
+  color: #ce93d8 !important;
+}
+
+/* Green Theme */
+body.green-theme {
+  --cosmic-void: #0d1f12;
+  --deep-space: #1b2f1b;
+  --nebula-purple: #81c784;
+  --star-blue: #a5d6a7;
+  --plasma-cyan: #80cbc4;
+  --cosmic-pink: #ffab91;
+  --aurora-green: #c8e6c9;
+  --neutron-white: #ffffff;
+  --stardust-gray: #c8e6c9;
+  --antimatter-black: #000000;
+  --quantum-glow: rgba(129, 199, 132, 0.8);
+  --cosmic-glow: rgba(255, 171, 145, 0.6);
+  --nebula-glow: rgba(129, 199, 132, 0.5);
+  --wormhole-gradient: linear-gradient(135deg, #81c784, #80cbc4, #c8e6c9);
+  --galaxy-gradient: linear-gradient(45deg, #0d1f12, #1b2f1b, #2e7d32);
+  --glass-cosmic: rgba(129, 199, 132, 0.1);
+  --glass-border-cosmic: rgba(129, 199, 132, 0.3);
+  --primary-bg: #0d1f12;
+  --glass-bg: rgba(129, 199, 132, 0.08);
+  --glass-border: rgba(129, 199, 132, 0.2);
+}
+
+body.green-theme h1, 
+body.green-theme h2, 
+body.green-theme h3, 
+body.green-theme h4, 
+body.green-theme h5, 
+body.green-theme h6 {
+  color: #81c784 !important;
+}
+
+body.green-theme p,
+body.green-theme span,
+body.green-theme li,
+body.green-theme .animated-text {
+  color: #c8e6c9 !important;
+}
+
+body.green-theme .nav-link {
+  color: #81c784 !important;
+}
+
+/* Apply theme transitions */
+body {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Update starfield background for different themes */
+body.light-theme #starfield-canvas,
+body.light-theme #star-field-canvas {
+  background: linear-gradient(135deg, #ffffff, #f8f9fa) !important;
+}
+
+body.dark-theme #starfield-canvas,
+body.dark-theme #star-field-canvas {
+  background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
+}
+
+body.purple-theme #starfield-canvas,
+body.purple-theme #star-field-canvas {
+  background: linear-gradient(135deg, #2d1b3d, #3d2952) !important;
+}
+
+body.green-theme #starfield-canvas,
+body.green-theme #star-field-canvas {
+  background: linear-gradient(135deg, #0d1f12, #1b2f1b) !important;
+}
+
+/* Additional CSS variables for enhanced themes */
+:root {
   --glow-primary: rgba(6, 255, 165, 0.8);
   --glow-secondary: rgba(139, 92, 246, 0.8);
   --text-secondary: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   COMPREHENSIVE THEME TEXT & UI STYLING
+============================================ */
+
+/* Common theme text improvements */
+body.light-theme .contact-details .contact-item,
+body.light-theme .social-connect .social-btn,
+body.light-theme .timeline-content,
+body.light-theme .cert-content h3,
+body.light-theme .cert-content p,
+body.light-theme .achievement-card h3,
+body.light-theme .achievement-card p {
+  color: #424242 !important;
+}
+
+body.light-theme .footer-content,
+body.light-theme .footer-content h3,
+body.light-theme .footer-content h4,
+body.light-theme .footer-content p,
+body.light-theme .footer-content a {
+  color: #424242 !important;
+}
+
+body.light-theme .social-btn {
+  border-color: #1976d2 !important;
+  color: #1976d2 !important;
+}
+
+body.light-theme .social-btn:hover {
+  background: #1976d2 !important;
+  color: #ffffff !important;
+}
+
+/* Dark theme improvements */
+body.dark-theme .contact-details .contact-item,
+body.dark-theme .social-connect .social-btn,
+body.dark-theme .timeline-content,
+body.dark-theme .cert-content h3,
+body.dark-theme .cert-content p,
+body.dark-theme .achievement-card h3,
+body.dark-theme .achievement-card p {
+  color: #b0bec5 !important;
+}
+
+/* Purple theme improvements */
+body.purple-theme .contact-details .contact-item,
+body.purple-theme .social-connect .social-btn,
+body.purple-theme .timeline-content,
+body.purple-theme .cert-content h3,
+body.purple-theme .cert-content p,
+body.purple-theme .achievement-card h3,
+body.purple-theme .achievement-card p {
+  color: #d1c4e9 !important;
+}
+
+/* Green theme improvements */
+body.green-theme .contact-details .contact-item,
+body.green-theme .social-connect .social-btn,
+body.green-theme .timeline-content,
+body.green-theme .cert-content h3,
+body.green-theme .cert-content p,
+body.green-theme .achievement-card h3,
+body.green-theme .achievement-card p {
+  color: #c8e6c9 !important;
+}
+
+/* Update body background for themes */
+body.light-theme {
+  background: var(--cosmic-void) !important;
+}
+
+body.dark-theme {
+  background: var(--cosmic-void) !important;
+}
+
+body.purple-theme {
+  background: var(--cosmic-void) !important;
+}
+
+body.green-theme {
+  background: var(--cosmic-void) !important;
 }
 
 /* PERFORMANCE OPTIMIZED - Critical CSS Only */
@@ -95,10 +331,10 @@ body.is-scrolling * {
 }
 
 @keyframes cosmicDrift {
-  0%, 100% { transform: translateZ(-100px) scale(1.1) rotate(0deg); }
-  25% { transform: translateZ(-120px) scale(1.15) rotate(0.5deg); }
-  50% { transform: translateZ(-80px) scale(1.2) rotate(-0.5deg); }
-  75% { transform: translateZ(-110px) scale(1.1) rotate(0.3deg); }
+  0%, 100% { transform: translateZ(0) scale(1) rotate(0deg); }
+  25% { transform: translateZ(0) scale(1) rotate(0deg); }
+  50% { transform: translateZ(0) scale(1) rotate(0deg); }
+  75% { transform: translateZ(0) scale(1) rotate(0deg); }
 }
 
 /* Disabled quantum field - using starfield instead */
@@ -170,20 +406,20 @@ body.is-scrolling * {
 
 @keyframes cosmicOrbs {
   0%, 100% { 
-    transform: translateZ(-150px) scale(1) rotate(0deg);
-    opacity: 0.6;
+    transform: translateZ(0) scale(1) rotate(0deg);
+    opacity: 0.3;
   }
   25% { 
-    transform: translateZ(-100px) scale(1.2) rotate(90deg);
-    opacity: 0.8;
+    transform: translateZ(0) scale(1) rotate(0deg);
+    opacity: 0.3;
   }
   50% { 
-    transform: translateZ(-200px) scale(0.8) rotate(180deg);
-    opacity: 0.4;
+    transform: translateZ(0) scale(1) rotate(0deg);
+    opacity: 0.3;
   }
   75% { 
-    transform: translateZ(-120px) scale(1.1) rotate(270deg);
-    opacity: 0.7;
+    transform: translateZ(0) scale(1) rotate(0deg);
+    opacity: 0.3;
   }
 }
 
@@ -536,6 +772,7 @@ body.is-scrolling * {
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
+  font-size: 18px;
 }
 
 .theme-btn::before {
@@ -561,6 +798,26 @@ body.is-scrolling * {
   transform: translateZ(20px) scale(1.1);
   box-shadow: 0 0 40px var(--quantum-glow);
   border-color: var(--plasma-cyan);
+}
+
+.theme-btn:active {
+  transform: translateZ(10px) scale(0.95);
+}
+
+/* Theme indicator styling */
+.theme-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
 }
 
 .nav-link:hover::before,
@@ -694,12 +951,10 @@ main {
   1% { 
     opacity: 0.8; 
     transform: translateX(-2px) translateZ(5px);
-    filter: hue-rotate(120deg);
   }
   3% { 
     opacity: 0.6; 
     transform: translateX(1px) translateZ(-3px);
-    filter: hue-rotate(240deg);
   }
   5% { opacity: 0; }
 }
@@ -709,12 +964,10 @@ main {
   2% { 
     opacity: 0.7; 
     transform: translateX(2px) translateZ(-5px);
-    filter: hue-rotate(60deg);
   }
   4% { 
     opacity: 0.5; 
     transform: translateX(-1px) translateZ(3px);
-    filter: hue-rotate(300deg);
   }
   6% { opacity: 0; }
 }
@@ -726,13 +979,13 @@ main {
     opacity: 0;
   }
   10% {
-    opacity: 1;
+    opacity: 0.5;
   }
   90% {
-    opacity: 1;
+    opacity: 0.5;
   }
   100% {
-    transform: translateY(-100px) rotate(360deg);
+    transform: translateY(-100px) rotate(0deg);
     opacity: 0;
   }
 }

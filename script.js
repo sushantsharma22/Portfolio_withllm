@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 Portfolio Loading - Mobile Optimized Version');
   
   // ==========================================
-  // PERFORMANCE MONITORING
+  // PERFORMANCE MONITORING & MOBILE DETECTION
   // ==========================================
   
   const startTime = performance.now();
@@ -17,35 +17,48 @@ document.addEventListener('DOMContentLoaded', () => {
   
   console.log('📱 Device Info:', deviceInfo);
   
+  // AGGRESSIVE MOBILE OPTIMIZATIONS
+  if (deviceInfo.isMobile || deviceInfo.isLowEnd) {
+    console.log('🔧 Applying mobile optimizations...');
+    
+    // Disable heavy animations on mobile
+    document.querySelectorAll('.fade-in').forEach(el => {
+      el.style.animation = 'fadeInMobile 0.3s ease-out forwards';
+    });
+    
+    // Reduce scroll listeners
+    let scrollTimeout;
+    const originalScrollHandler = window.onscroll;
+    window.onscroll = function() {
+      if (scrollTimeout) return;
+      scrollTimeout = setTimeout(() => {
+        if (originalScrollHandler) originalScrollHandler();
+        scrollTimeout = null;
+      }, 16); // 60fps max
+    };
+  }
+  
   // Measure initial load performance
   window.addEventListener('load', () => {
     const loadTime = performance.now() - startTime;
     console.log(`⚡ Page loaded in ${Math.round(loadTime)}ms`);
-    
-    if (loadTime > 3000) {
-      console.warn('⚠️ Slow loading detected, applying additional optimizations');
-      // Apply emergency optimizations
-      document.querySelectorAll('.fade-in').forEach(el => {
-        el.style.animation = 'none';
-        el.style.opacity = '1';
-      });
-    }
   });
   
   // ==========================================
-  // INTERACTIVE STARFIELD WITH MOUSE MOVEMENT & SHOOTING STARS
+  // ULTRA-LIGHTWEIGHT STARFIELD (MOBILE OPTIMIZED)
   // ==========================================
   
   const starfieldCanvas = document.getElementById('starfield-canvas');
-  if (starfieldCanvas) {
+  if (starfieldCanvas && !deviceInfo.isVeryLowEnd) {
     const ctx = starfieldCanvas.getContext('2d');
     let stars = [];
     let shootingStars = [];
-    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let animationId;
-    let isPaused = false;
+    let lastFrameTime = 0;
+    const targetFPS = deviceInfo.isMobile ? 20 : 30; // Even lower FPS for mobile
+    const frameInterval = 1000 / targetFPS;
 
-    // Initialize starfield
+    // Initialize starfield with fewer stars
     function initStarfield() {
       starfieldCanvas.width = window.innerWidth;
       starfieldCanvas.height = window.innerHeight;
@@ -53,31 +66,26 @@ document.addEventListener('DOMContentLoaded', () => {
       stars = [];
       shootingStars = [];
       
-      // Create regular stars
-      const isMobile = window.innerWidth < 768;
-      const numStars = isMobile ? 150 : 200;
+      // Drastically reduce stars for mobile
+      const numStars = deviceInfo.isVeryLowEnd ? 30 : 
+                       deviceInfo.isMobile ? 50 : 80;
       
       for (let i = 0; i < numStars; i++) {
         stars.push({
           x: Math.random() * starfieldCanvas.width,
           y: Math.random() * starfieldCanvas.height,
-          originalX: 0,
-          originalY: 0,
-          size: Math.random() * 2 + 0.5,
-          alpha: Math.random() * 0.5 + 0.5,
+          size: Math.random() * 1 + 0.5,
+          alpha: Math.random() * 0.4 + 0.6,
           twinkle: Math.random() * Math.PI * 2,
-          twinkleSpeed: Math.random() * 0.02 + 0.01,
-          mouseInfluence: Math.random() * 0.0003 + 0.0001
+          twinkleSpeed: Math.random() * 0.01 + 0.003, // Much slower twinkling
         });
-        
-        // Store original positions
-        stars[i].originalX = stars[i].x;
-        stars[i].originalY = stars[i].y;
       }
     }
 
-    // Create shooting star
+    // Create shooting star (much less frequent for mobile)
     function createShootingStar() {
+      if (deviceInfo.isMobile && shootingStars.length > 1) return; // Limit shooting stars on mobile
+      
       const side = Math.floor(Math.random() * 4);
       let x, y, vx, vy;
       
@@ -85,66 +93,55 @@ document.addEventListener('DOMContentLoaded', () => {
         case 0: // Top
           x = Math.random() * starfieldCanvas.width;
           y = -50;
-          vx = (Math.random() - 0.5) * 4;
-          vy = Math.random() * 3 + 2;
+          vx = (Math.random() - 0.5) * 1.5;
+          vy = Math.random() * 1.5 + 0.8;
           break;
         case 1: // Right
           x = starfieldCanvas.width + 50;
           y = Math.random() * starfieldCanvas.height;
-          vx = -(Math.random() * 3 + 2);
-          vy = (Math.random() - 0.5) * 4;
+          vx = -(Math.random() * 1.5 + 0.8);
+          vy = (Math.random() - 0.5) * 1.5;
           break;
         case 2: // Bottom
           x = Math.random() * starfieldCanvas.width;
           y = starfieldCanvas.height + 50;
-          vx = (Math.random() - 0.5) * 4;
-          vy = -(Math.random() * 3 + 2);
+          vx = (Math.random() - 0.5) * 1.5;
+          vy = -(Math.random() * 1.5 + 0.8);
           break;
         case 3: // Left
           x = -50;
           y = Math.random() * starfieldCanvas.height;
-          vx = Math.random() * 3 + 2;
-          vy = (Math.random() - 0.5) * 4;
+          vx = Math.random() * 1.5 + 0.8;
+          vy = (Math.random() - 0.5) * 1.5;
           break;
       }
       
       shootingStars.push({
         x, y, vx, vy,
-        length: Math.random() * 60 + 20,
+        length: deviceInfo.isMobile ? 20 : 30, // Shorter trails on mobile
         alpha: 1,
-        decay: Math.random() * 0.02 + 0.01,
+        decay: Math.random() * 0.03 + 0.02,
         trail: []
       });
     }
 
-    // Update stars based on mouse position
+    // Update stars (ultra-lightweight)
     function updateStars() {
-      stars.forEach(star => {
-        // Mouse influence - stars move away from cursor
-        const dx = star.originalX - mouse.x;
-        const dy = star.originalY - mouse.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const maxDistance = 200;
-        
-        if (distance < maxDistance) {
-          const influence = (maxDistance - distance) / maxDistance;
-          star.x = star.originalX + dx * influence * star.mouseInfluence * 100;
-          star.y = star.originalY + dy * influence * star.mouseInfluence * 100;
-        } else {
-          // Slowly return to original position
-          star.x += (star.originalX - star.x) * 0.02;
-          star.y += (star.originalY - star.y) * 0.02;
-        }
-        
-        // Twinkling effect
-        star.twinkle += star.twinkleSpeed;
-        star.alpha = Math.sin(star.twinkle) * 0.3 + 0.7;
-      });
+      // Update twinkling (skip some frames on mobile)
+      const skipFrames = deviceInfo.isMobile ? Math.random() < 0.7 : true;
+      if (skipFrames) {
+        stars.forEach(star => {
+          star.twinkle += star.twinkleSpeed;
+          star.alpha = Math.sin(star.twinkle) * 0.2 + 0.8;
+        });
+      }
       
       // Update shooting stars
       shootingStars.forEach((shootingStar, index) => {
-        // Add current position to trail
-        shootingStar.trail.push({ x: shootingStar.x, y: shootingStar.y, alpha: shootingStar.alpha });
+        // Add current position to trail (less frequently on mobile)
+        if (!deviceInfo.isMobile || Math.random() < 0.8) {
+          shootingStar.trail.push({ x: shootingStar.x, y: shootingStar.y });
+        }
         
         // Limit trail length
         if (shootingStar.trail.length > shootingStar.length) {
@@ -166,137 +163,105 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      // Randomly create shooting stars
-      if (Math.random() < 0.005) { // 0.5% chance per frame
+      // Create shooting stars much less frequently on mobile
+      const shootingStarChance = deviceInfo.isMobile ? 0.0005 : 0.001;
+      if (Math.random() < shootingStarChance) {
         createShootingStar();
       }
     }
 
-    // Render everything
+    // Render everything (ultra-optimized for mobile)
     function renderStars() {
       ctx.clearRect(0, 0, starfieldCanvas.width, starfieldCanvas.height);
       
-      // Render regular stars
+      // Render twinkling stars (simplified on mobile)
       stars.forEach(star => {
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.8})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.7})`;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
         ctx.fill();
         
-        // Add subtle glow for larger stars
-        if (star.size > 1.5) {
-          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.2})`;
+        // Skip glow effect on mobile for performance
+        if (!deviceInfo.isMobile && star.size > 1) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.15})`;
           ctx.beginPath();
-          ctx.arc(star.x, star.y, star.size * 2, 0, Math.PI * 2);
+          ctx.arc(star.x, star.y, star.size * 1.3, 0, Math.PI * 2);
           ctx.fill();
         }
       });
       
-      // Render shooting stars
+      // Render shooting stars (simplified)
       shootingStars.forEach(shootingStar => {
         if (shootingStar.trail.length > 1) {
-          ctx.strokeStyle = `rgba(255, 255, 255, ${shootingStar.alpha})`;
-          ctx.lineWidth = 2;
-          ctx.lineCap = 'round';
-          
-          // Draw trail
-          ctx.beginPath();
-          shootingStar.trail.forEach((point, index) => {
-            const trailAlpha = (index / shootingStar.trail.length) * shootingStar.alpha;
-            ctx.globalAlpha = trailAlpha;
+          // Simplified trail rendering for mobile
+          if (deviceInfo.isMobile) {
+            // Simple line instead of gradient
+            ctx.strokeStyle = `rgba(255, 255, 255, ${shootingStar.alpha * 0.6})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(shootingStar.trail[0].x, shootingStar.trail[0].y);
+            ctx.lineTo(shootingStar.x, shootingStar.y);
+            ctx.stroke();
+          } else {
+            // Full trail for desktop
+            ctx.strokeStyle = `rgba(255, 255, 255, ${shootingStar.alpha * 0.8})`;
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = 'round';
             
-            if (index === 0) {
-              ctx.moveTo(point.x, point.y);
-            } else {
+            ctx.beginPath();
+            ctx.moveTo(shootingStar.trail[0].x, shootingStar.trail[0].y);
+            
+            for (let i = 1; i < shootingStar.trail.length; i++) {
+              ctx.lineTo(shootingStar.trail[i].x, shootingStar.trail[i].y);
+            }
+            ctx.stroke();
+          }
+        }
+        
+        // Shooting star head (simplified on mobile)
+        ctx.fillStyle = `rgba(255, 255, 255, ${shootingStar.alpha})`;
+        ctx.beginPath();
+        ctx.arc(shootingStar.x, shootingStar.y, deviceInfo.isMobile ? 1 : 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // Frame rate limited animation loop
+    function animateStarfield(currentTime) {
+      if (currentTime - lastFrameTime >= frameInterval) {
+        updateStars();
+        renderStars();
+        lastFrameTime = currentTime;
+      }
+      animationId = requestAnimationFrame(animateStarfield);
+    }
+          
+          ctx.beginPath();
+          ctx.moveTo(shootingStar.trail[0].x, shootingStar.trail[0].y);
+          shootingStar.trail.forEach((point, index) => {
+            if (index > 0) {
               ctx.lineTo(point.x, point.y);
             }
           });
           ctx.stroke();
-          ctx.globalAlpha = 1;
           
           // Draw bright head
           ctx.fillStyle = `rgba(255, 255, 255, ${shootingStar.alpha})`;
-          ctx.beginPath();
-          ctx.arc(shootingStar.x, shootingStar.y, 3, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Add glow to head
-          ctx.fillStyle = `rgba(255, 255, 255, ${shootingStar.alpha * 0.3})`;
-          ctx.beginPath();
-          ctx.arc(shootingStar.x, shootingStar.y, 8, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
-    }
-
-    // Animation loop
-    function animateStarfield() {
-      if (!isPaused) {
-        updateStars();
-        renderStars();
-      }
-      animationId = requestAnimationFrame(animateStarfield);
-    }
-
-    // Mouse tracking
-    let mouseTimeout;
-    document.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      
-      // Create particle effect at mouse position occasionally
-      if (Math.random() < 0.02) {
-        stars.push({
-          x: mouse.x + (Math.random() - 0.5) * 20,
-          y: mouse.y + (Math.random() - 0.5) * 20,
-          originalX: mouse.x + (Math.random() - 0.5) * 20,
-          originalY: mouse.y + (Math.random() - 0.5) * 20,
-          size: Math.random() * 1 + 0.5,
-          alpha: 1,
-          twinkle: 0,
-          twinkleSpeed: 0.1,
-          mouseInfluence: 0,
-          temporary: true,
-          life: 60 // frames
-        });
-      }
-      
-      // Remove temporary stars after their life expires
-      stars = stars.filter(star => {
-        if (star.temporary) {
-          star.life--;
-          star.alpha = star.life / 60;
-          return star.life > 0;
-        }
-        return true;
-      });
-    });
-
-    // Pause during scroll for performance
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-      isPaused = true;
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        isPaused = false;
-      }, 100);
-    }, { passive: true });
-
-    // Initialize and start animation
+    // Initialize and start
     initStarfield();
-    animateStarfield();
+    animateStarfield(0);
 
-    // Resize handler
+    // Resize handler with debouncing
     window.addEventListener('resize', () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        initStarfield();
-      }, 250);
+      clearTimeout(window.resizeTimeout);
+      window.resizeTimeout = setTimeout(initStarfield, 250);
     });
+  } else if (deviceInfo.isVeryLowEnd) {
+    // Disable starfield completely on very low-end devices
+    console.log('🚫 Starfield disabled for very low-end device');
   }
-
   // ==========================================
-  // AGGRESSIVE MOBILE OPTIMIZATION
+  // MOBILE-OPTIMIZED SCROLL PERFORMANCE
   // ==========================================
   
   function optimizeForDevice() {
@@ -371,15 +336,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // LIGHTWEIGHT HEADER SCROLL - THROTTLED
   // ==========================================
   
+  // ==========================================
+  // UNIFIED SCROLL PERFORMANCE OPTIMIZATION
+  // ==========================================
+  
   let headerScrollTimeout;
   let isScrolling = false;
+  let scrollTimeout;
   const header = document.querySelector('.futuristic-header');
   
-  function updateHeaderScroll() {
+  function handleOptimizedScroll() {
     if (isScrolling) return;
     isScrolling = true;
     
     requestAnimationFrame(() => {
+      // Header scroll logic
       if (header) {
         if (window.scrollY > 50) {
           header.classList.add('scrolled');
@@ -387,11 +358,48 @@ document.addEventListener('DOMContentLoaded', () => {
           header.classList.remove('scrolled');
         }
       }
+      
+      // Add any other scroll-based logic here
       isScrolling = false;
     });
   }
   
-  // Use passive scroll listener with throttling
+  // ==========================================
+  // IMAGE LAZY LOADING FOR MOBILE PERFORMANCE
+  // ==========================================
+  
+  if (deviceInfo.isMobile) {
+    // Add intersection observer for lazy loading
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+            imageObserver.unobserve(img);
+          }
+        }
+      });
+    }, {
+      rootMargin: '50px' // Load images 50px before they come into view
+    });
+    
+    // Observe all project images
+    document.querySelectorAll('.project-image img').forEach(img => {
+      if (img.src && img.src.includes('unsplash')) {
+        // Convert to smaller mobile-optimized URLs
+        const mobileUrl = img.src.replace('w=400&h=250', 'w=300&h=200&q=60');
+        img.dataset.src = mobileUrl;
+        img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="200"%3E%3Crect width="100%25" height="100%25" fill="%23000013"/%3E%3C/svg%3E';
+        imageObserver.observe(img);
+      }
+    });
+  }
+  
+  // Use passive listeners for better scroll performance on mobile
+  const scrollOptions = deviceInfo.isMobile ? { passive: true } : {};
+  window.addEventListener('scroll', handleOptimizedScroll, scrollOptions);
   let scrollTicking = false;
   window.addEventListener('scroll', () => {
     if (!scrollTicking) {
@@ -615,69 +623,37 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // MOBILE-OPTIMIZED AI TITLE ANIMATION SYSTEM
+  // SIMPLIFIED TITLE SYSTEM (PERFORMANCE FOCUSED)
   // ==========================================
   
-  // Enhanced quantum titles rotation with typing effect
+  // Simplified title rotation with minimal animation
   const titles = document.querySelectorAll('.title-item');
   let currentTitle = 0;
-  let isAnimating = false;
-  const isMobile = window.innerWidth < 768;
   
-  if (titles.length > 0 && !isMobile) { // Skip complex animations on mobile
-    // Initialize all titles as hidden except the first
+  if (titles.length > 0) {
+    // Initialize - show only first title
     titles.forEach((title, index) => {
       if (index !== 0) {
-        title.style.opacity = '0';
-        title.style.transform = 'translate(-50%, -50%) translateZ(-50px) translateY(20px)';
+        title.style.display = 'none';
+      } else {
+        title.classList.add('active');
       }
     });
     
     function switchTitle() {
-      if (isAnimating) return;
-      isAnimating = true;
+      // Hide current title
+      titles[currentTitle].style.display = 'none';
+      titles[currentTitle].classList.remove('active');
       
-      const currentTitleElement = titles[currentTitle];
-      const nextTitle = (currentTitle + 1) % titles.length;
-      const nextTitleElement = titles[nextTitle];
-      
-      // Simplified fade transition
-      currentTitleElement.style.transition = 'opacity 0.3s ease';
-      currentTitleElement.style.opacity = '0';
-      currentTitleElement.classList.remove('active');
-      
-      setTimeout(() => {
-        nextTitleElement.style.transition = 'opacity 0.3s ease';
-        nextTitleElement.style.opacity = '1';
-        nextTitleElement.classList.add('active');
-        
-        currentTitle = nextTitle;
-        isAnimating = false;
-      }, 300);
+      // Show next title
+      currentTitle = (currentTitle + 1) % titles.length;
+      titles[currentTitle].style.display = 'block';
+      titles[currentTitle].classList.add('active');
     }
     
-    // Slower transition for better performance
-    const titleInterval = setInterval(switchTitle, 5000);
-    
-    // Pause on hover (desktop only)
-    const titleContainer = document.querySelector('.quantum-titles');
-    if (titleContainer && !isMobile) {
-      titleContainer.addEventListener('mouseenter', () => {
-        clearInterval(titleInterval);
-      });
-      
-      titleContainer.addEventListener('mouseleave', () => {
-        setInterval(switchTitle, 5000);
-      });
-    }
-  } else if (titles.length > 0 && isMobile) {
-    // Mobile: show only first title, hide others
-    titles.forEach((title, index) => {
-      if (index !== 0) {
-        title.style.display = 'none';
-      }
-    });
-    console.log('🔧 Title animations disabled for mobile');
+    // Switch every 4 seconds - less frequent for better performance
+    setInterval(switchTitle, 4000);
+    console.log('✅ Simplified title system initialized');
   }
   
   // ==========================================
@@ -785,26 +761,30 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================
-  // INTERSECTION OBSERVER FOR ANIMATIONS
+  // SIMPLIFIED SCROLL ANIMATIONS
   // ==========================================
   
+  // Simple show/hide without heavy transitions
   const fadeElements = document.querySelectorAll('.fade-in');
   
   const fadeObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
+        entry.target.style.opacity = '1';
+        entry.target.style.visibility = 'visible';
         fadeObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.1 });
   
   fadeElements.forEach(element => {
+    element.style.opacity = '0';
+    element.style.visibility = 'hidden';
     fadeObserver.observe(element);
   });
 
   // ==========================================
-  // SKILL BAR ANIMATIONS
+  // SIMPLIFIED SKILL BAR ANIMATIONS
   // ==========================================
   
   function animateSkillBars() {
@@ -813,14 +793,10 @@ document.addEventListener('DOMContentLoaded', () => {
     skillBars.forEach((bar, index) => {
       const progress = bar.getAttribute('data-progress');
       if (progress) {
-        // Reset width first
-        bar.style.width = '0%';
-        
-        // Add a staggered delay for each bar
+        // Instant animation for performance
         setTimeout(() => {
-          bar.style.transition = 'width 2s ease-in-out';
           bar.style.width = progress + '%';
-        }, 100 + (index * 50)); // 50ms delay between each bar
+        }, index * 20); // Minimal delay
       }
     });
   }

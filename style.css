@@ -1,5 +1,116 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 
+/* ==============================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+============================================== */
+
+/* Fast mobile animations */
+@keyframes fadeInMobile {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Disable expensive animations on mobile */
+@media (max-width: 768px) {
+  * {
+    /* Improve scrolling performance */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto !important; /* Disable smooth scrolling on mobile */
+  }
+  
+  /* Disable transforms and filters on mobile to improve performance */
+  .project-card:hover {
+    transform: none !important;
+  }
+  
+  .project-overlay {
+    opacity: 1 !important; /* Always show to avoid hover issues */
+  }
+  
+  /* Simplify gradients for mobile */
+  .futuristic-header::before,
+  .project-card::before,
+  .btn-primary::before {
+    background: var(--cosmic-void) !important;
+  }
+}
+
+/* ==============================================
+   IMAGE OPTIMIZATIONS FOR MOBILE
+============================================== */
+
+/* Lazy loading and optimization for project images */
+.project-image img {
+  loading: lazy;
+  decoding: async;
+  /* Use smaller images on mobile */
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+@media (max-width: 768px) {
+  .project-image img {
+    /* Force lower quality on mobile for faster loading */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* ==============================================
+   MOBILE PERFORMANCE: REDUCE BLUR AND SHADOWS
+============================================== */
+
+@media (max-width: 768px) {
+  /* Remove expensive filters */
+  .project-card {
+    backdrop-filter: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .futuristic-header {
+    backdrop-filter: none !important;
+  }
+  
+  /* Simplify glassmorphism effects */
+  .glass-bg {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: none !important;
+  }
+  
+  /* Disable expensive hover effects */
+  .project-card:hover,
+  .skill-item:hover,
+  .achievement-card:hover {
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* Very low-end device optimizations */
+@media (max-width: 480px) {
+  /* Disable all animations and transitions */
+  *, *::before, *::after {
+    animation-duration: 0.01s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01s !important;
+    transition-delay: 0s !important;
+  }
+  
+  /* Disable gradients completely */
+  .hero-content, .project-card, .skill-category {
+    background: var(--cosmic-void) !important;
+  }
+  
+  /* Reduce number of visible elements */
+  .achievement-card:nth-child(n+3) {
+    display: none;
+  }
+  
+  .cert-item:nth-child(n+6) {
+    display: none;
+  }
+}
+
 :root {
   --cosmic-void: #000013;
   --deep-space: #0B0C2A;
@@ -89,44 +200,66 @@ body.red-variant {
 }
 
 /* ==============================================
-   MOBILE PERFORMANCE OPTIMIZATIONS
+   AGGRESSIVE PERFORMANCE OPTIMIZATIONS
 ============================================== */
 
-/* Disable animations on very small screens */
-@media (max-width: 480px) {
-  * {
-    animation-duration: 0.3s !important;
-    transition-duration: 0.2s !important;
-  }
+/* Global Performance Optimization - Disable Heavy Effects */
+* {
+  /* Remove all transform-based animations that cause repaints */
+  animation-duration: 0s !important;
+  transition-duration: 0.15s !important;
   
-  .glitch-text::before,
-  .glitch-text::after {
-    display: none !important;
-  }
-  
-  .ai-particles,
-  .quantum-particle,
-  .particle {
-    display: none !important;
-  }
-  
-  .title-item:not(.active) {
-    display: none !important;
-  }
+  /* Disable expensive CSS properties */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  will-change: auto !important;
+  transform: none !important;
 }
 
-/* Reduce animations on tablets */
-@media (max-width: 768px) {
-  .ai-particles {
-    display: none !important;
-  }
-  
-  .quantum-particle {
-    animation-duration: 2s !important;
-  }
+/* Keep only essential smooth transitions for user interactions */
+a, button, .btn, .nav-link {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
 }
 
-/* Performance-focused animations */
+/* Disable all particle systems and heavy visual effects */
+.ai-particles,
+.quantum-particle,
+.particle,
+.cosmic-orb,
+.floating-orb,
+.glitch-text::before,
+.glitch-text::after {
+  display: none !important;
+}
+
+/* Remove shimmer and rotating animations */
+.skill-progress::after,
+.avatar-glow::before {
+  display: none !important;
+}
+
+/* Disable transform-based hover effects that cause lag */
+.skill-category:hover,
+.achievement-card:hover,
+.project-card:hover,
+.timeline-content:hover {
+  transform: none !important;
+}
+
+/* Simplify background effects */
+.skill-category,
+.achievement-card,
+.project-card,
+.timeline-content,
+.contact-form {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 19, 0.15) !important;
+  border: 1px solid rgba(6, 255, 165, 0.1) !important;
+}
+
+/* Performance-focused animations - disable problematic ones */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -137,23 +270,33 @@ body.red-variant {
   }
 }
 
-/* GPU acceleration for key elements */
-.hero-content,
-.glitch-text,
-.quantum-titles,
-.futuristic-header {
-  will-change: transform;
-  transform: translateZ(0);
-}
-
 /* ==============================================
-   ANIMATIONS AND KEYFRAMES
+   SIMPLIFIED ANIMATIONS - PERFORMANCE FOCUSED
 ============================================== */
 
+/* Remove all heavy keyframe animations */
 @keyframes floatAI {
-  0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-  50% { transform: translateY(-15px) rotate(90deg); opacity: 0.8; }
-  100% { transform: translateY(-30px) rotate(180deg); opacity: 0; }
+  /* Disabled for performance */
+}
+
+@keyframes cosmicDrift {
+  /* Disabled for performance */
+}
+
+@keyframes quantumGrid {
+  /* Disabled for performance */
+}
+
+@keyframes starField {
+  /* Disabled for performance */
+}
+
+@keyframes shimmer {
+  /* Disabled for performance */
+}
+
+@keyframes rotate {
+  /* Disabled for performance */
 }
 
 body.purple-theme p,
@@ -938,96 +1081,50 @@ main {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
-  animation: 
-    ronGlitch 6s ease-in-out infinite,
-    gradientShift 8s ease infinite;
-  text-shadow: 
-    0 0 30px var(--quantum-glow),
-    0 0 60px var(--cosmic-glow),
-    0 4px 8px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.05em;
-  filter: drop-shadow(0 0 20px var(--plasma-cyan));
+  /* Removed all heavy glitch animations for performance */
 }
 
+/* Disabled glitch effects for performance */
 .glitch-text::before,
 .glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, var(--plasma-cyan), var(--cosmic-pink));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
-.glitch-text::before {
-  animation: glitchBefore 3s infinite;
-  z-index: -1;
-}
-
-.glitch-text::after {
-  animation: glitchAfter 2s infinite;
-  z-index: -2;
-}
+/* ==============================================
+   DISABLED HEAVY ANIMATIONS FOR PERFORMANCE
+============================================== */
 
 @keyframes ronGlitch {
-  0%, 90%, 100% { 
-    transform: translateZ(0) rotateX(0deg) skewX(0deg);
-    filter: brightness(1) contrast(1) saturate(1);
-  }
-  2% { 
-    transform: translateZ(5px) rotateX(1deg) skewX(1deg);
-    filter: brightness(1.2) contrast(1.1) saturate(1.3);
-  }
-  4% { 
-    transform: translateZ(-3px) rotateX(-0.5deg) skewX(-0.5deg);
-    filter: brightness(0.9) contrast(1.2) saturate(0.8);
-  }
-  8% { 
-    transform: translateZ(8px) rotateX(2deg) skewX(2deg);
-    filter: brightness(1.4) contrast(0.9) saturate(1.5);
-  }
-  10% { 
-    transform: translateZ(0) rotateX(0deg) skewX(0deg);
-    filter: brightness(1) contrast(1) saturate(1);
-  }
+  /* Disabled for performance */
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  /* Disabled for performance */
 }
 
 @keyframes glitchBefore {
-  0%, 96%, 100% { opacity: 0; }
-  1% { 
-    opacity: 0.8; 
-    transform: translateX(-2px) translateZ(5px);
-  }
-  3% { 
-    opacity: 0.6; 
-    transform: translateX(1px) translateZ(-3px);
-  }
-  5% { opacity: 0; }
+  /* Disabled for performance */
 }
 
 @keyframes glitchAfter {
-  0%, 94%, 100% { opacity: 0; }
-  2% { 
-    opacity: 0.7; 
-    transform: translateX(2px) translateZ(-5px);
-  }
-  4% { 
-    opacity: 0.5; 
-    transform: translateX(-1px) translateZ(3px);
-  }
-  6% { opacity: 0; }
+  /* Disabled for performance */
+}
+
+@keyframes headerPulse {
+  /* Disabled for performance */
+}
+
+@keyframes pulse {
+  /* Disabled for performance */
+}
+
+@keyframes sectionPulse {
+  /* Disabled for performance */
+}
+
+@keyframes typingPulse {
+  /* Disabled for performance */
 }
 
 /* AI Particle Animations */
@@ -1391,15 +1488,16 @@ section h2::after {
 }
 
 .avatar-glow {
+  /* Simplified static glow for performance */
   position: absolute;
   top: -20px;
   left: -20px;
   right: -20px;
   bottom: -20px;
   border-radius: 50%;
-  background: conic-gradient(var(--accent-purple), var(--accent-cyan), var(--accent-pink), var(--accent-purple));
-  animation: rotate 4s linear infinite;
+  background: linear-gradient(45deg, var(--accent-purple), var(--accent-cyan));
   z-index: -1;
+  /* Remove rotation animation for performance */
 }
 
 @keyframes rotate {
@@ -1443,30 +1541,17 @@ section h2::after {
 }
 
 .skill-category {
-  /* Ultra-transparent for starfield visibility */
-  background: rgba(0, 0, 19, 0.08); /* Minimal dark background */
+  /* Simplified background for performance */
+  background: rgba(0, 0, 19, 0.15);
   padding: 2rem;
   border-radius: 20px;
-  border: 1px solid rgba(6, 255, 165, 0.06);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.02);
-  transform: translateZ(10px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(6, 255, 165, 0.1);
+  transition: none; /* Removed for performance */
 }
 
 .skill-category:hover {
-  transform: translateZ(20px) scale(1.02);
-  background: rgba(0, 0, 19, 0.12); /* Slightly more visible on hover */
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border-color: rgba(6, 255, 165, 0.1);
-  box-shadow: 
-    0 16px 48px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 0 0 1px rgba(6, 255, 165, 0.08);
+  background: rgba(0, 0, 19, 0.2);
+  border-color: rgba(6, 255, 165, 0.15);
 }
 
 .skill-category h3 {
@@ -1513,21 +1598,11 @@ section h2::after {
   background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
   border-radius: 3px;
   width: 0;
-  transition: width 2s ease;
+  transition: width 1s ease; /* Simplified transition */
   position: relative;
 }
 
-.skill-progress::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: shimmer 3s infinite;
-  will-change: transform;
-}
+/* Removed shimmer animation for performance */
 
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
@@ -1729,37 +1804,20 @@ section h2::after {
 }
 
 .achievement-card {
-  /* Enhanced transparent glass effect */
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%),
-    rgba(139, 92, 246, 0.03);
+  /* Simplified glass effect for performance */
+  background: rgba(0, 0, 19, 0.15);
   padding: 2rem;
   border-radius: 20px;
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(15px) saturate(150%);
-  -webkit-backdrop-filter: blur(15px) saturate(150%);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.1);
   text-align: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: none; /* Removed for performance */
   position: relative;
   overflow: hidden;
-  transform: translateZ(5px);
 }
 
 .achievement-card:hover {
-  transform: translateY(-8px) translateZ(12px);
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%),
-    rgba(139, 92, 246, 0.05);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 
-    0 20px 50px rgba(139, 92, 246, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(139, 92, 246, 0.2);
+  background: rgba(0, 0, 19, 0.2);
+  border-color: rgba(139, 92, 246, 0.2);
 }
 
 .achievement-icon {
@@ -2173,15 +2231,14 @@ section h2::after {
 }
 
 /* Animations */
+/* Simplified animations for performance */
 .fade-in {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.6s ease;
+  /* Remove heavy transform animations */
+  transition: opacity 0.2s ease;
 }
 
 .fade-in.visible {
   opacity: 1;
-  transform: translateY(0);
 }
 
 /* Project Modal */
@@ -2437,35 +2494,105 @@ body.loading * {
   }
 }
 
-/* Tablet */
+/* Mobile Header Optimization */
 @media (max-width: 768px) {
   .futuristic-header {
-    height: 70px;
+    height: 60px;
+    padding: 0;
   }
   
   .header-container {
-    padding: 0 1rem;
+    padding: 0 0.8rem;
+    gap: 0.5rem;
   }
   
-  .nav-link {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
-    gap: 0.3rem;
+  .logo-container {
+    flex-shrink: 0;
   }
   
-  .nav-link span {
-    display: none; /* Hide text on mobile */
-  }
-  
-  .nav-link i {
+  .logo-text {
     font-size: 1.2rem;
   }
   
-  .nav-list {
-    gap: 0.3rem;
+  .neural-nav {
+    flex: 1;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
   }
+  
+  .neural-nav::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  
+  .nav-list {
+    gap: 0.2rem;
+    padding: 0 0.5rem;
+    white-space: nowrap;
+    justify-content: flex-start;
+  }
+  
+  .nav-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+    gap: 0.2rem;
+    min-width: 40px;
+    flex-shrink: 0;
+    border-radius: 8px;
+  }
+  
+  .nav-link span {
+    display: none; /* Hide text, show only icons */
+  }
+  
+  .nav-link i {
+    font-size: 1.1rem;
+  }
+  
+  .theme-switcher {
+    flex-shrink: 0;
+  }
+  
+  .theme-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+}
 
-  /* Timeline mobile adjustments */
+/* Extra small devices */
+@media (max-width: 480px) {
+  .futuristic-header {
+    height: 55px;
+  }
+  
+  .header-container {
+    padding: 0 0.5rem;
+  }
+  
+  .logo-text {
+    font-size: 1.1rem;
+  }
+  
+  .nav-link {
+    padding: 0.3rem 0.4rem;
+    min-width: 35px;
+  }
+  
+  .nav-link i {
+    font-size: 1rem;
+  }
+  
+  .theme-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Timeline Adjustments */
+@media (max-width: 768px) {
   .timeline::after {
     left: 20px;
     margin-left: 0;

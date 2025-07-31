@@ -1,0 +1,183 @@
+Sushant Sharma
+Windsor, Ontario | sharmasj53@gmail.com | (226) 961-5873 | sushantsharma22.github.io/Portfolio
+linkedin.com/in/sushantsharma22 | github.com/sushantsharma22
+
+Technical Skills
+Programming Languages: Python, Java, C++, C
+Deep Learning: LLMs, Transformers, Reinforcement Learning, NLP, Multimodal AI, Model Optimization,
+Generative AI
+Libraries & Frameworks: PyTorch, TensorFlow, OpenCV, ONNX Runtime, TensorRT, Scikit-learn, HuggingFace
+Platforms & Tools: Jupyter notebook, Git, PyCharm, VSCode, Ubuntu, GitHub
+Key Proficiency: Parallel Model Training, AI Model Deployment, Fine tuning LLMs, Generative AI, Optimization
+
+Education
+May 2024 – September 2025
+University of Windsor, Master of Applied Computing – Windsor, Ontario
+• Available for full time opportunities starting September 2025
+• Coursework: Advanced Database Systems, Internet Applications and Distributed Systems, Advance Software
+Engineering
+• Specialization: Artificial Intelligence and Finance at Global Perspective
+Lovely Professional University, Bachelor of Technology in Computer Science and
+July 2019 – June 2023
+Engineering – Punjab, India
+• Coursework: Predictive Analysis, Android, Cloud, Data Engineering, Data Visualization, Data Structures and
+Algorithms
+
+Experience
+May 2025 – August 2025
+AI Research Intern, JLR North America – Windsor, Ontario (Remote)
+• Drove impactful research initiatives for a global automotive leader, advancing innovative solutions through
+cutting edge AI technologies
+• Designed and executed sophisticated experiments with advanced computational tools to analyze complex
+datasets, delivering high precision results
+• Developed streamlined workflows to process and evaluate data, ensuring alignment with stringent project
+standards and timelines
+• Collaborated with cross functional teams, including academic partners from the University, to achieve strategic
+project goals while maintaining strict confidentiality and intellectual property protocols
+• Leveraged expertise in artificial intelligence, machine learning, data analysis, and software development to
+deliver transformative outcomes in automotive research
+Machine Learning Intern, University of Windsor – Windsor, Ontario
+January 2025 – April 2025
+• Collaborated directly with TD Bank as project client, holding regular meetings to align system requirements and
+progress
+• Independently designed and implemented the full backend system, managing data pipelines, connection
+between prediction models, and infrastructure
+• Developed machine learning modules focused on credit-lending decision predictions, optimizing for model
+integrity and production readiness
+• Contributed to rigorous model validation, testing workflows, and system documentation to ensure deployment
+quality
+• Technologies: Python, Scikit-learn, XGBoost, Pandas, SQL, CLI, Agile
+Machine Learning Engineer, S.S. Engineering Works – Una, India
+
+June 2023 – April 2024
+
+• Developed AI-based predictive analytics, reducing inventory costs by 15% and improving financial
+
+decision-making
+• Implemented fine-tuned deep learning models using PyTorch & TensorFlow for anomaly detection in industrial
+
+operations
+• Automated data pipelines and reporting using Python, Pandas, and SQL, improving efficiency by 20%
+Data Science Intern, S.S. Engineering Works – Una, India
+June 2022 – June 2023
+• Built custom data loaders to optimize performance and reduce processing time for enterprise-scale workloads.
+• Automated and documented feed generation pipelines, streamlining team operations and supporting process
+improvement.
+Tech Event Coordinator, Gravity LPU – Punjab, India
+October 2019 – April 2022
+• Coordinated events using project management tools (MS Project, MS Excel, MS Word etc.), enhancing
+operational efficiency
+• Managed 50+ AI & coding hackathons, engaging over 200+ participants and boosting team collaboration
+
+Projects
+2025
+IntelliCity-Architecture: Smart City Data Pipeline
+• Engineered & deployed a modular pipeline with NiFi, Kafka, Hadoop, Spark, and Cassandra for scalable IoT
+analytics
+• Automated sensor data flows, real-time streaming, distributed storage, batch analytics, and compression at every
+stage
+• Delivered end-to-end data pathways from city edge devices to fast, actionable dashboards
+• Technologies: NiFi, Kafka, Hadoop, Spark, Cassandra, Zstandard, IoT, Docker
+Efficient-Image-Restoration: Deep Learning Image Denoising Framework
+2024
+• Developed a paired data pipeline, custom U-Net model, and full training/evaluation suite for image restoration
+tasks
+• Automated scripts for dataset creation (noise/low-res simulation, target pairing), enabling rapid research cycles
+• Achieved restoration assessment using industry-standard PSNR/SSIM metrics, plus dynamic quantization for
+deployment
+• Technologies: Python, PyTorch, CV2, U-Net, Data Science Automation, Model Benchmarking
+EdgeAIOptimizer: Edge-Aware Deep Learning Inference Framework
+2024
+• Engineered a modular inference framework for fast deep learning on edge hardware, leveraging ONNX
+Runtime, C++, and OpenCV
+• Implemented resource-aware optimization interfaces supporting quantization, operator fusion, and runtime
+session tuning
+• Designed CLI tools for benchmarking baseline vs optimized model performance and enabling rapid
+deployment/testing cycles
+• Technologies: C++, ONNX Runtime, Python, OpenCV, PyTorch, Model Compression
+DineSmart: Restaurant Management System
+2024
+• Developed a full-featured restaurant management solution in C, leveraging custom doubly linked lists for all
+menu, order, and sales records
+• Designed modular admin and customer workflows: menu maintenance, live ordering, dynamic billing, and sales
+auditing
+• Implemented robust memory and data management, user input handling, and real-time output
+• Technologies: C, CLI Menus, Memory Management, Linked Data Structures
+SmartPay-UPI: Secure QR-Based Payment & Personal Finance System
+2025
+• Developed a cross-platform e-wallet simulation implementing QR code payments, blockchain-secured
+transaction logging, and robust user/account management
+• Designed for Canadian market simulation: daily limits, bill scheduling, recurring payments, and full admin
+
+audit/rollback controls
+• Integrated fraud detection, per-user spending budgets, rule-based AI assistant, and email notifications for
+
+registration/activity/security events
+• Technologies: Python, OpenCV, pyzbar, QRCode, CSV/JSON, bcrypt, SMTP, Custom Blockchain
+Django Inventory Management System
+2024
+• Built a full-stack Django web app for tracking products, categories, customers, and orders, including real-time
+stock levels and purchase status
+• Leveraged Django ORM for modeling complex relationships and ensuring referential integrity
+• Automated database seeding for test and demo with a custom management script
+• Technologies: Python, Django, SQLite, HTML/CSS (Django Templating)
+Distributed File Storage System
+2024
+• Designed and implemented a web-based, chunked file storage solution, simulating distributed storage with
+redundancy
+• Engineered resilient file handling: 1MB chunking, per-chunk and file-level SHA256 validation, and 2-way
+replication across simulated storage nodes
+• Built complete Django backend: models, views, user-auth UI, upload/download pipelines, and an admin
+dashboard for file/chunk insight
+• Technologies: Python, Django, SHA-256, HTML, Linux Filesystem Operations
+EmotionSentimentNet: Distributed Multi-Task Emotion & Sentiment Classifier
+2024
+• Engineered a multi-head deep neural network, leveraging DeBERTa-v3 to jointly classify emotions and predict
+sentiment intensity from social media/user text
+• Developed and optimized a full GPU-accelerated pipeline: data preprocessing, joint-task training, early stopping,
+and model evaluation with PyTorch DataParallel/mixed precision
+• Integrated state-of-the-art cleaning (emoji, lemmatization), transformer-based sentiment labeling, robust
+checkpointing, and detailed diagnostic visualizations
+• Technologies: PyTorch, HuggingFace Transformers, DataParallel, spaCy, Scikit-learn, NLTK
+Automated Aurora Alert System: Real-Time Event Notification Pipeline
+2023
+• Architected and deployed a full-stack (Python/HTML/CSS) notification system delivering timely aurora borealis
+alerts based on real-world geophysical and weather data
+• Engineered a modular backend with scheduled routines for real-time and predictive alerting, using public APIs
+(NOAA, Open-Meteo, sunrise-sunset.org) to automate data-driven decision making
+• Integrated Google Sheets as a privacy-first, scalable user signup backend and Gmail SMTP for reliable email
+notifications
+• Technologies: Python, REST API Integration, Google Sheets API, SMTP, GitHub Actions, HTML5/CSS3
+Property-Finder: Scalable Real Estate Search & Scraping Suite
+2023
+• Designed and developed a robust multi-source property search platform for Canadian real estate
+• Engineered Selenium-based web scrapers with exponential backoff and multi-threaded analytics
+• Integrated advanced search and suggestion features: AVL-tree-based autocomplete, Trie- and
+Levenshtein-powered spell correction, Boyer-Moore/KMP ranking, and filtering by multiple parameters
+• Technologies: Java 11+, Selenium WebDriver, Apache Commons CSV, ExecutorService, Tries, AVL Trees,
+Boyer-Moore, KMP, Maven
+self-learning-LLMS: A Scalable Pipeline for Self-Improving Language Models
+2025
+via RL and LoRA
+• Developed a distributed reinforcement learning pipeline for large language models, implementing SEAL:
+Self-Editing via Reward-Guided Self-Editing
+• Designed and engineered an iterative training loop that uses multi-candidate edit sampling, token-level F1 and
+semantic similarity metrics for candidate filtering, and parameter-efficient LoRA fine-tuning
+• Supported multi-GPU/distributed regimes (torchrun, DDP), enabling large-batch RL and rapid scaling
+
+• Technologies: Python, PyTorch, HuggingFace Transformers, PEFT/LoRA, Accelerate, DeepSpeed, Hydra, YAML,
+
+SentenceTransformers
+
+Conferences
+2023
+Twitter Sentiment Analysis on COVID-19
+• Presented at ICCS-2023 (KILBY100), showcasing NLP techniques using Python and applying diverse ML
+algorithms for performance metrics, maintaining data pipelines, and statistical analysis in multimodal sentiment
+analysis
+
+Certificates & Technical Training
+• Machine Learning Certification by Andrew Ng, Coursera
+• Artificial Intelligence with Deep Learning, Udemy
+
+
